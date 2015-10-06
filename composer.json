@@ -1,0 +1,32 @@
+{
+    "name": "nailsapp/module-elasticsearch",
+    "keywords": ["Nails", "Shed Collective", "CodeIgniter", "Elasticsearch", "Elasticsearch Module"],
+    "homepage": "http://nailsapp.co.uk/modules/elasticsearch",
+    "description": "This is the \"Elasticsearch\" module for Nails.",
+    "license": "MIT",
+    "authors":
+    [
+        {
+            "name": "Pablo de la Pena",
+            "email": "p@shedcollective.org",
+            "homepage": "http://shedcollective.org",
+            "role": "Developer"
+        }
+    ],
+    "support":
+    {
+        "email": "hello@shedcollective.org"
+    },
+    "require":
+    {
+        "elasticsearch/elasticsearch": "~2.0"
+    },
+    "extra":
+    {
+        "nails" :
+        {
+            "moduleName": "elasticsearch",
+            "type": "module"
+        }
+    }
+}
