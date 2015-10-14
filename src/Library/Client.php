@@ -12,6 +12,8 @@
 
 namespace Nails\Elasticsearch\Library;
 
+use Nails\Factory;
+
 class Client
 {
     private $oElasticsearchClient;
@@ -23,7 +25,7 @@ class Client
      */
     public function __construct()
     {
-        $this->oElasticsearchClient = \Nails\Factory::property(
+        $this->oElasticsearchClient = Factory::property(
             'ElasticsearchClient',
             'nailsapp/module-elasticsearch'
         );
