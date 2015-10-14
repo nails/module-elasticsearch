@@ -12,7 +12,9 @@
 
 namespace Nails\Admin\Elasticsearch;
 
-class Elasticsearch extends \AdminController
+use Nails\Admin\Controller\Base;
+
+class Elasticsearch extends Base
 {
     /**
      * Announces this controller's navGroups
