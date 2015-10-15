@@ -2,6 +2,8 @@
 
 namespace Nails\Elasticsearch\Exception;
 
-class ClientException extends \Exception
+use Nails\Common\Exception\NailsException;
+
+class ClientException extends NailsException
 {
 }
