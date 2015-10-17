@@ -12,6 +12,7 @@
 
 namespace Nails\Admin\Elasticsearch;
 
+use Nails\Admin\Helper;
 use Nails\Admin\Controller\Base;
 
 class Elasticsearch extends Base
@@ -58,6 +59,6 @@ class Elasticsearch extends Base
             unauthorised();
         }
 
-        \Nails\Admin\Helper::loadView('index');
+        Helper::loadView('index');
     }
 }
