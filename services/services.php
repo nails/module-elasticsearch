@@ -6,8 +6,11 @@ return array(
     ),
     'services' => array(
         'Client' => function() {
-
-            return new \Nails\Elasticsearch\Library\Client();
+            if (class_exists('\App\Elasticsearch\Library\Client')) {
+                return new \App\Elasticsearch\Library\Client();
+            } else {
+                return new \Nails\Elasticsearch\Library\Client();
+            }
         },
         'ElasticsearchClient' => function() {
 
