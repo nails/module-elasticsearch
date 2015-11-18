@@ -1,5 +1,7 @@
 <?php
 
+use Nails\Factory;
+
 return array(
     'properties' => array(
         'hosts' => array()
@@ -14,7 +16,7 @@ return array(
         },
         'ElasticsearchClient' => function() {
 
-            $aHosts = \Nails\Factory::property('hosts', 'nailsapp/module-elasticsearch');
+            $aHosts = Factory::property('hosts', 'nailsapp/module-elasticsearch');
 
             return \Elasticsearch\ClientBuilder::create()
                 ->setHosts($aHosts)

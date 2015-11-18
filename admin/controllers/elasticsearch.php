@@ -12,6 +12,7 @@
 
 namespace Nails\Admin\Elasticsearch;
 
+use Nails\Factory;
 use Nails\Admin\Helper;
 use Nails\Admin\Controller\Base;
 
@@ -25,7 +26,9 @@ class Elasticsearch extends Base
     {
         if (userHasPermission('admin:elasticsearch:elasticsearch:browse')) {
 
-            $navGroup = new \Nails\Admin\Nav('Elasticsearch', 'fa-search');
+            $navGroup = Factory::factory('Nav', 'nailsapp/module-admin');
+            $navGroup->setLabel('Elasticsearch');
+            $navGroup->setIcon('fa-search');
             $navGroup->addAction('Manage Elasticsearch');
             return $navGroup;
         }
