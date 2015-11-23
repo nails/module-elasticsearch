@@ -34,6 +34,29 @@ class Client
     // --------------------------------------------------------------------------
 
     /**
+     * Returns whether elastic search is available
+     * @return boolean
+     */
+    public function isAvailable()
+    {
+        if (empty($this->oElasticsearchClient)) {
+            return false;
+        }
+
+        //  @todo: check the availability of the client
+        try {
+
+            return true;
+
+        } catch (\Exception $e) {
+
+            return false;
+        }
+    }
+
+    // --------------------------------------------------------------------------
+
+    /**
      * Routes calls to this class to the Elasticsearch client
      * @param  string $sMethod    The method to call
      * @param  array  $aArguments An array of arguments passed to the method
@@ -41,7 +64,17 @@ class Client
      */
     public function __call($sMethod, $aArguments)
     {
-        if (is_callable(array($this->oElasticsearchClient, $sMethod))) {
+        if (is_callable(array($this, $sMethod))) {
+
+            return call_user_func_array(
+                array(
+                    $this,
+                    $sMethod
+                ),
+                $aArguments
+            );
+
+        } elseif (is_callable(array($this->oElasticsearchClient, $sMethod))) {
 
             return call_user_func_array(
                 array(
