@@ -1,5 +1,5 @@
 <div class="group-elasticsearch">
-    <p class="system-alert">
+    <p class="alert alert-warning">
         @todo: Elasticsearch admin, if any.
     </p>
 </div>
