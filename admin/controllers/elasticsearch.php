@@ -26,11 +26,11 @@ class Elasticsearch extends Base
     {
         if (userHasPermission('admin:elasticsearch:elasticsearch:browse')) {
 
-            $navGroup = Factory::factory('Nav', 'nailsapp/module-admin');
-            $navGroup->setLabel('Elasticsearch');
-            $navGroup->setIcon('fa-search');
-            $navGroup->addAction('Manage Elasticsearch');
-            return $navGroup;
+            $oNavGroup = Factory::factory('Nav', 'nailsapp/module-admin');
+            $oNavGroup->setLabel('Elasticsearch');
+            $oNavGroup->setIcon('fa-search');
+            $oNavGroup->addAction('Manage Elasticsearch');
+            return $oNavGroup;
         }
     }
 
