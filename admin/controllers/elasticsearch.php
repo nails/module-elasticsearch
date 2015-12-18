@@ -19,17 +19,24 @@ use Nails\Admin\Controller\Base;
 class Elasticsearch extends Base
 {
     /**
+     * Require the user be authenticated to use any endpoint
+     */
+    const REQUIRE_AUTH = true;
+
+    // --------------------------------------------------------------------------
+
+    /**
      * Announces this controller's navGroups
      * @return stdClass
      */
     public static function announce()
     {
-        if (userHasPermission('admin:elasticsearch:elasticsearch:browse')) {
+        if (userHasPermission('admin:elasticsearch:elasticsearch:view')) {
 
             $oNavGroup = Factory::factory('Nav', 'nailsapp/module-admin');
             $oNavGroup->setLabel('Elasticsearch');
             $oNavGroup->setIcon('fa-search');
-            $oNavGroup->addAction('Manage Elasticsearch');
+            $oNavGroup->addAction('Statistics');
             return $oNavGroup;
         }
     }
@@ -44,7 +51,7 @@ class Elasticsearch extends Base
     {
         $permissions = parent::permissions();
 
-        $permissions['browse']    = 'Can manage Elasticsearch';
+        $permissions['view'] = 'Can manage Elasticsearch';
 
         return $permissions;
     }
@@ -57,10 +64,15 @@ class Elasticsearch extends Base
      */
     public function index()
     {
-        if (!userHasPermission('admin:elasticsearch:elasticsearch:browse')) {
-
+        if (!userHasPermission('admin:elasticsearch:elasticsearch:view')) {
             unauthorised();
         }
+
+        $oAsset = Factory::service('Asset');
+        $oAsset->load('admin.stats.css', 'nailsapp/module-elasticsearch');
+        $oAsset->load('admin.stats.min.js', 'nailsapp/module-elasticsearch');
+
+        $this->data['page']->title = 'Elasticsearch Statistics';
 
         Helper::loadView('index');
     }

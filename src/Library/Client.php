@@ -25,7 +25,7 @@ class Client
      */
     public function __construct()
     {
-        $this->oElasticsearchClient = Factory::property(
+        $this->oElasticsearchClient = Factory::service(
             'ElasticsearchClient',
             'nailsapp/module-elasticsearch'
         );
@@ -34,7 +34,7 @@ class Client
     // --------------------------------------------------------------------------
 
     /**
-     * Returns whether elastic search is available
+     * Returns whether Elasticsearch is available
      * @return boolean
      */
     public function isAvailable()
@@ -43,15 +43,32 @@ class Client
             return false;
         }
 
-        //  @todo: check the availability of the client
+        $bResult = true;
+        ob_start();
+
         try {
 
-            return true;
+
+            $oResult = $this->oElasticsearchClient->exists(
+                array(
+                    'index' => 'test',
+                    'type' => 'test',
+                    'id' => 'test'
+                )
+            );
+
+        } catch (\Elasticsearch\Common\Exceptions\NoNodesAvailableException $e) {
+
+            $bResult = false;
 
         } catch (\Exception $e) {
 
-            return false;
+            $bResult = true;
         }
+
+        ob_end_clean();
+
+        return $bResult;
     }
 
     // --------------------------------------------------------------------------
@@ -64,33 +81,12 @@ class Client
      */
     public function __call($sMethod, $aArguments)
     {
-        if (is_callable(array($this, $sMethod))) {
-
-            return call_user_func_array(
-                array(
-                    $this,
-                    $sMethod
-                ),
-                $aArguments
-            );
-
-        } elseif (is_callable(array($this->oElasticsearchClient, $sMethod))) {
-
-            return call_user_func_array(
-                array(
-                    $this->oElasticsearchClient,
-                    $sMethod
-                ),
-                $aArguments
-            );
-
-        } else {
-
-            throw new \Nails\Elasticsearch\Exception\ClientException(
-                '"' . $sMethod . '" is not a valid Elasticsearch Client method',
-                1
-            );
-
-        }
+        return call_user_func_array(
+            array(
+                $this->oElasticsearchClient,
+                $sMethod
+            ),
+            $aArguments
+        );
     }
 }

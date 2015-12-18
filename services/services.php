@@ -7,14 +7,14 @@ return array(
         'hosts' => array()
     ),
     'services' => array(
-        'Client' => function() {
+        'Client' => function () {
             if (class_exists('\App\Elasticsearch\Library\Client')) {
                 return new \App\Elasticsearch\Library\Client();
             } else {
                 return new \Nails\Elasticsearch\Library\Client();
             }
         },
-        'ElasticsearchClient' => function() {
+        'ElasticsearchClient' => function () {
 
             $aHosts = Factory::property('hosts', 'nailsapp/module-elasticsearch');
 
