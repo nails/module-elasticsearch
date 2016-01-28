@@ -35,10 +35,15 @@ class Client
 
     /**
      * Returns whether Elasticsearch is available
+     * @param  integer $iTimeout The length of time to wait before considering the connection dead
      * @return boolean
      */
-    public function isAvailable()
+    public function isAvailable($iTimeout = null)
     {
+        if (empty($iTimeout)) {
+            $iTimeout = Factory::property('timeout', 'nailsapp/module-elasticsearch');
+        }
+
         if (empty($this->oElasticsearchClient)) {
             return false;
         }
@@ -52,8 +57,12 @@ class Client
             $oResult = $this->oElasticsearchClient->exists(
                 array(
                     'index' => 'test',
-                    'type' => 'test',
-                    'id' => 'test'
+                    'type'  => 'test',
+                    'id'    => 'test',
+                    'client' => array(
+                        'timeout'         => $iTimeout,
+                        'connect_timeout' => $iTimeout
+                    )
                 )
             );
 

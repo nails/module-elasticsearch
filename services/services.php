@@ -4,7 +4,8 @@ use Nails\Factory;
 
 return array(
     'properties' => array(
-        'hosts' => array()
+        'hosts'   => array(),
+        'timeout' => 2
     ),
     'services' => array(
         'Client' => function () {
