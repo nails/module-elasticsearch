@@ -34,7 +34,8 @@
         "nails" :
         {
             "moduleName": "elasticsearch",
-            "type": "module"
+            "type": "module",
+            "namespace": "Nails\\Elasticsearch\\"
         }
     }
 }
