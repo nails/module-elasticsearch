@@ -2,12 +2,12 @@
 
 use Nails\Factory;
 
-return array(
-    'properties' => array(
-        'hosts'   => array(),
-        'timeout' => 2
-    ),
-    'services' => array(
+return [
+    'properties' => [
+        'hosts'   => ['localhost:9200'],
+        'timeout' => 2,
+    ],
+    'services' => [
         'Client' => function () {
             if (class_exists('\App\Elasticsearch\Library\Client')) {
                 return new \App\Elasticsearch\Library\Client();
@@ -22,6 +22,6 @@ return array(
             return \Elasticsearch\ClientBuilder::create()
                 ->setHosts($aHosts)
                 ->build();
-        }
-    )
-);
+        },
+    ],
+];
