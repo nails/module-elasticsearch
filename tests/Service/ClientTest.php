@@ -1,6 +1,6 @@
 <?php
 
-namespace Nails\Elasticsearch\Library;
+namespace Nails\Elasticsearch\Service;
 
 class ElasticsearchTest extends \PHPUnit_Framework_TestCase
 {
