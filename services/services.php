@@ -9,10 +9,10 @@ return [
     ],
     'services' => [
         'Client' => function () {
-            if (class_exists('\App\Elasticsearch\Library\Client')) {
-                return new \App\Elasticsearch\Library\Client();
+            if (class_exists('\App\Elasticsearch\Service\Client')) {
+                return new \App\Elasticsearch\Service\Client();
             } else {
-                return new \Nails\Elasticsearch\Library\Client();
+                return new \Nails\Elasticsearch\Service\Client();
             }
         },
         'ElasticsearchClient' => function () {

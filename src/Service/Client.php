@@ -10,7 +10,7 @@
  * @link
  */
 
-namespace Nails\Elasticsearch\Library;
+namespace Nails\Elasticsearch\Service;
 
 use Nails\Factory;
 
@@ -21,7 +21,7 @@ class Client
     // --------------------------------------------------------------------------
 
     /**
-     * Set up library
+     * Set up Service
      */
     public function __construct()
     {
