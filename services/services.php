@@ -17,7 +17,7 @@ return [
         },
         'ElasticsearchClient' => function () {
 
-            $aHosts = Factory::property('hosts', 'nailsapp/module-elasticsearch');
+            $aHosts = Factory::property('hosts', 'nails/module-elasticsearch');
 
             return \Elasticsearch\ClientBuilder::create()
                 ->setHosts($aHosts)

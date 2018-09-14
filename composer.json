@@ -1,5 +1,5 @@
 {
-    "name": "nailsapp/module-elasticsearch",
+    "name": "nails/module-elasticsearch",
     "keywords": ["Nails", "Shed Collective", "CodeIgniter", "Elasticsearch", "Elasticsearch Module"],
     "homepage": "http://nailsapp.co.uk/modules/elasticsearch",
     "description": "This is the \"Elasticsearch\" module for Nails.",

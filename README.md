@@ -15,7 +15,7 @@ You should follow the latest instructions for installation on [Elastic's officia
 
 Configure which hosts the client connects to by defining a service property called `hosts`. By default this will connect to `localhost:9200`.
 
-If you wish to override this in your application, create a `services.php` file at `application/services/nailsapp/module-elasticsearch/`.
+If you wish to override this in your application, create a `services.php` file at `application/services/nails/module-elasticsearch/`.
 
 Example `services.php` below:
 
@@ -25,7 +25,7 @@ Example `services.php` below:
      * Include the base services file so that the client can be instantiated,
      * remember you are simply overriding defaults.
      */
-    $aServices = include 'vendor/nailsapp/module-elasticsearch/services/services.php';
+    $aServices = include 'vendor/nails/module-elasticsearch/services/services.php';
 
     /**
      * Define an array of hosts for the Elasticsearch client to use.

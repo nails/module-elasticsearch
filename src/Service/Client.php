@@ -27,7 +27,7 @@ class Client
     {
         $this->oElasticsearchClient = Factory::service(
             'ElasticsearchClient',
-            'nailsapp/module-elasticsearch'
+            'nails/module-elasticsearch'
         );
     }
 
@@ -41,7 +41,7 @@ class Client
     public function isAvailable($iTimeout = null)
     {
         if (empty($iTimeout)) {
-            $iTimeout = Factory::property('timeout', 'nailsapp/module-elasticsearch');
+            $iTimeout = Factory::property('timeout', 'nails/module-elasticsearch');
         }
 
         if (empty($this->oElasticsearchClient)) {

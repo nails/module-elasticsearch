@@ -34,8 +34,8 @@ class Stats extends \Nails\Api\Controller\Base
             throw new ApiException('You are not authorised to use this endpoint.', 401);
         }
 
-        $oClient = Factory::service('Client', 'nailsapp/module-elasticsearch');
-        return Factory::factory('ApiResponse', 'nailsapp/module-api')
+        $oClient = Factory::service('Client', 'nails/module-elasticsearch');
+        return Factory::factory('ApiResponse', 'nails/module-api')
                         ->setData(['isAvailable' => $oClient->isAvailable()]);
     }
 
@@ -52,12 +52,12 @@ class Stats extends \Nails\Api\Controller\Base
 
         }
 
-        $oClient = Factory::service('Client', 'nailsapp/module-elasticsearch');
+        $oClient = Factory::service('Client', 'nails/module-elasticsearch');
         if (!$oClient->isAvailable()) {
             throw new ApiException('Elasticsearch is not available.', 500);
         }
 
-        return Factory::factory('ApiResponse', 'nailsapp/module-api')
+        return Factory::factory('ApiResponse', 'nails/module-api')
                         ->setData($oClient->cluster()->stats());
     }
 }

@@ -33,7 +33,7 @@ class Elasticsearch extends Base
     {
         if (userHasPermission('admin:elasticsearch:elasticsearch:view')) {
 
-            $oNavGroup = Factory::factory('Nav', 'nailsapp/module-admin');
+            $oNavGroup = Factory::factory('Nav', 'nails/module-admin');
             $oNavGroup->setLabel('Elasticsearch');
             $oNavGroup->setIcon('fa-search');
             $oNavGroup->addAction('Statistics');
@@ -69,8 +69,8 @@ class Elasticsearch extends Base
         }
 
         $oAsset = Factory::service('Asset');
-        $oAsset->load('admin.stats.css', 'nailsapp/module-elasticsearch');
-        $oAsset->load('admin.stats.min.js', 'nailsapp/module-elasticsearch');
+        $oAsset->load('admin.stats.css', 'nails/module-elasticsearch');
+        $oAsset->load('admin.stats.min.js', 'nails/module-elasticsearch');
 
         $this->data['page']->title = 'Elasticsearch Statistics';
 
