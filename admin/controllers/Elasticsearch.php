@@ -27,12 +27,12 @@ class Elasticsearch extends Base
 
     /**
      * Announces this controller's navGroups
+     *
      * @return stdClass
      */
     public static function announce()
     {
         if (userHasPermission('admin:elasticsearch:elasticsearch:view')) {
-
             $oNavGroup = Factory::factory('Nav', 'nails/module-admin');
             $oNavGroup->setLabel('Elasticsearch');
             $oNavGroup->setIcon('fa-search');
@@ -45,21 +45,23 @@ class Elasticsearch extends Base
 
     /**
      * Returns an array of extra permissions for this controller
+     *
      * @return array
      */
     public static function permissions()
     {
-        $permissions = parent::permissions();
+        $aPermissions = parent::permissions();
 
-        $permissions['view'] = 'Can manage Elasticsearch';
+        $aPermissions['view'] = 'Can manage Elasticsearch';
 
-        return $permissions;
+        return $aPermissions;
     }
 
     // --------------------------------------------------------------------------
 
     /**
      * Manage elasticsearch
+     *
      * @return void
      */
     public function index()
@@ -67,10 +69,6 @@ class Elasticsearch extends Base
         if (!userHasPermission('admin:elasticsearch:elasticsearch:view')) {
             unauthorised();
         }
-
-        $oAsset = Factory::service('Asset');
-        $oAsset->load('admin.stats.css', 'nails/module-elasticsearch');
-        $oAsset->load('admin.stats.min.js', 'nails/module-elasticsearch');
 
         $this->data['page']->title = 'Elasticsearch Statistics';
 
