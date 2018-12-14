@@ -6,14 +6,17 @@
                 margin-right: 0.5em;
             }
         }
+
         #js-stats-nodes,
         #js-stats-indices {
             .alert {
                 margin: 0;
             }
+
             table {
                 table-layout: fixed;
             }
+
             th.value,
             td.value {
                 text-align: center;
