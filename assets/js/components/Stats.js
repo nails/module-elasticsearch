@@ -4,7 +4,7 @@ class Stats {
         if ($('.group-elasticsearch.stats').length) {
             this.loadStats();
             $('.js-action-reload-stats')
-                .Event('click', () => {
+                .on('click', () => {
                     this.loadStats();
                 });
         }
