@@ -7,8 +7,6 @@
 
 This is the Elasticsearch Module for Nails, it provides a Nails friendly interface for working with the [Elasticsearch PHP client](https://github.com/elastic/elasticsearch-php).
 
-http://nailsapp.co.uk/modules/elasticsearch
-
 
 ## Installing Elasticsearch
 
