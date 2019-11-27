@@ -4,5 +4,9 @@ import '../sass/admin.scss';
 import Stats from './components/Stats.js';
 
 (function() {
-    new Stats();
+    window.NAILS.ADMIN.registerPlugin(
+        'nails/module-elasticsearch',
+        'Stats',
+        new Stats()
+    );
 })();
