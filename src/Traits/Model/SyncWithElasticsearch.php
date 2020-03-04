@@ -72,11 +72,11 @@ trait SyncWithElasticsearch
         $oClient = Factory::service('Client', Constants::MODULE_SLUG);
         $oItem   = $this->getById($iId, $this->syncToElasticsearchData());
         $oClient
-            ->index(dd([
+            ->index([
                 'id'    => $oItem->id,
                 'index' => $this->syncWithIndex()->getIndex(),
                 'body'  => $oItem,
-            ]));
+            ]);
     }
 
     // --------------------------------------------------------------------------
