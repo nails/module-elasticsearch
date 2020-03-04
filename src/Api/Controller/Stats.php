@@ -12,9 +12,17 @@
 
 namespace Nails\Elasticsearch\Api\Controller;
 
+use Nails\Api\Factory\ApiResponse;
 use Nails\ApiApiException\ApiException;
+use Nails\Elasticsearch\Constants;
+use Nails\Elasticsearch\Service\Client;
 use Nails\Factory;
 
+/**
+ * Class Stats
+ *
+ * @package Nails\Elasticsearch\Api\Controller
+ */
 class Stats extends \Nails\Api\Controller\Base
 {
     /**
@@ -25,39 +33,50 @@ class Stats extends \Nails\Api\Controller\Base
     // --------------------------------------------------------------------------
 
     /**
-     * Ge tthe status of the connection
-     * @return array
+     * Whether the user is authenticated.
+     *
+     * @param string $sHttpMethod The HTTP Method protocol being used
+     * @param string $sMethod     The controller method being executed
+     *
+     * @return array|bool
      */
-    public function getConnectionStatus()
+    public static function isAuthenticated($sHttpMethod = '', $sMethod = '')
     {
-        if (!userHasPermission('admin:elasticsearch:elasticsearch:view')) {
-            throw new ApiException('You are not authorised to use this endpoint.', 401);
-        }
+        return parent::isAuthenticated($sHttpMethod, $sMethod)
+            && userHasPermission('admin:elasticsearch:elasticsearch:view');
+    }
 
+    // --------------------------------------------------------------------------
+
+    /**
+     * Ge tthe status of the connection
+     *
+     * @return ApiResponse
+     */
+    public function getConnectionStatus(): ApiResponse
+    {
+        /** @var Client $oClient */
         $oClient = Factory::service('Client', 'nails/module-elasticsearch');
-        return Factory::factory('ApiResponse', 'nails/module-api')
-                        ->setData(['isAvailable' => $oClient->isAvailable()]);
+        return Factory::factory('ApiResponse', Constants::MODULE_SLUG)
+            ->setData(['isAvailable' => $oClient->isAvailable()]);
     }
 
     // --------------------------------------------------------------------------
 
     /**
      * Get stats about the Elasticsearch service
-     * @return array
+     *
+     * @return ApiResponse
      */
-    public function getIndex()
+    public function getIndex(): ApiResponse
     {
-        if (!userHasPermission('admin:elasticsearch:elasticsearch:view')) {
-            throw new ApiException('You are not authorised to use this endpoint.', 401);
-
-        }
-
+        /** @var Client $oClient */
         $oClient = Factory::service('Client', 'nails/module-elasticsearch');
         if (!$oClient->isAvailable()) {
             throw new ApiException('Elasticsearch is not available.', 500);
         }
 
-        return Factory::factory('ApiResponse', 'nails/module-api')
-                        ->setData($oClient->cluster()->stats());
+        return Factory::factory('ApiResponse', Constants::MODULE_SLUG)
+            ->setData($oClient->cluster()->stats());
     }
 }
