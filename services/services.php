@@ -16,7 +16,7 @@ return [
         'ElasticsearchClient' => function () {
             return \Elasticsearch\ClientBuilder::create()
                 ->setHosts(
-                    Config::get('ELASTIC_SEARCH_HOSTS', ['127.0.0.1:9200'])
+                    Config::get('ELASTICSEARCH_HOSTS', ['127.0.0.1:9200'])
                 )
                 ->build();
         },
