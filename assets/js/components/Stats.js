@@ -34,7 +34,7 @@ class Stats {
                     };
                 }
 
-                $('#stats-loading')
+                $('#js-stats-loading')
                     .attr('class', 'alert alert-danger')
                     .html(data.error);
             });
