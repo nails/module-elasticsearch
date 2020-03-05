@@ -12,9 +12,12 @@
 
 namespace Nails\Elasticsearch\Factory;
 
+use Nails\Elasticsearch\Constants;
 use Nails\Elasticsearch\Exception\ClientException;
+use Nails\Elasticsearch\Factory\Search\Results;
 use Nails\Elasticsearch\Interfaces\Index;
 use Elasticsearch\Client;
+use Nails\Factory;
 
 /**
  * Class Search
@@ -197,16 +200,18 @@ class Search
      * @param int|null $iSize The number of results to return
      * @param int      $iPage The page of results to return
      *
-     * @return array
+     * @return Results
      */
-    public function execute(int $iSize = null, int $iPage = 0)
+    public function execute(int $iSize = null, int $iPage = 0): Results
     {
-        $iSize = $iSize ?? static::DEFAULT_SIZE;
-        return $this
+        $iSize    = $iSize ?? static::DEFAULT_SIZE;
+        $aResults = $this
             ->oClient
             ->search(
                 $this->compile($iSize, $iPage)
             );
+
+        return Factory::factory('SearchResults', Constants::MODULE_SLUG, $aResults);
     }
 
     // --------------------------------------------------------------------------

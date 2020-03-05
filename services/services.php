@@ -22,7 +22,7 @@ return [
         },
     ],
     'factories' => [
-        'Search' => function (
+        'Search'           => function (
             \Elasticsearch\Client $oClient,
             $mQuery,
             $mIndexes = null
@@ -31,6 +31,20 @@ return [
                 return new \App\Elasticsearch\Factory\Search($oClient, $mQuery, $mIndexes);
             } else {
                 return new Elasticsearch\Factory\Search($oClient, $mQuery, $mIndexes);
+            }
+        },
+        'SearchResults'    => function (array $aResults): Elasticsearch\Factory\Search\Results {
+            if (class_exists('\App\Elasticsearch\Factory\Search\Results')) {
+                return new \App\Elasticsearch\Factory\Search\Results($aResults);
+            } else {
+                return new Elasticsearch\Factory\Search\Results($aResults);
+            }
+        },
+        'SearchResultsHit' => function (array $aHit): Elasticsearch\Factory\Search\Results\Hit {
+            if (class_exists('\App\Elasticsearch\Factory\Search\Results\Hit')) {
+                return new \App\Elasticsearch\Factory\Search\Results\Hit($aHit);
+            } else {
+                return new Elasticsearch\Factory\Search\Results\Hit($aHit);
             }
         },
     ],
