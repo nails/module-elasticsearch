@@ -12,8 +12,7 @@
 
 namespace Nails\Elasticsearch\Api\Controller;
 
-use Nails\Api\Factory\ApiResponse;
-use Nails\ApiApiException\ApiException;
+use Nails\Api;
 use Nails\Elasticsearch\Constants;
 use Nails\Elasticsearch\Service\Client;
 use Nails\Factory;
@@ -51,13 +50,13 @@ class Stats extends \Nails\Api\Controller\Base
     /**
      * Ge tthe status of the connection
      *
-     * @return ApiResponse
+     * @return Api\Factory\ApiResponse
      */
-    public function getConnectionStatus(): ApiResponse
+    public function getConnectionStatus(): Api\Factory\ApiResponse
     {
         /** @var Client $oClient */
-        $oClient = Factory::service('Client', 'nails/module-elasticsearch');
-        return Factory::factory('ApiResponse', Constants::MODULE_SLUG)
+        $oClient = Factory::service('Client', Constants::MODULE_SLUG);
+        return Factory::factory('ApiResponse', Api\Constants::MODULE_SLUG)
             ->setData(['isAvailable' => $oClient->isAvailable()]);
     }
 
@@ -66,17 +65,17 @@ class Stats extends \Nails\Api\Controller\Base
     /**
      * Get stats about the Elasticsearch service
      *
-     * @return ApiResponse
+     * @return Api\Factory\ApiResponse
      */
-    public function getIndex(): ApiResponse
+    public function getIndex(): Api\Factory\ApiResponse
     {
         /** @var Client $oClient */
-        $oClient = Factory::service('Client', 'nails/module-elasticsearch');
+        $oClient = Factory::service('Client', Constants::MODULE_SLUG);
         if (!$oClient->isAvailable()) {
-            throw new ApiException('Elasticsearch is not available.', 500);
+            throw new Api\Exception\ApiException('Elasticsearch is not available.', 500);
         }
 
-        return Factory::factory('ApiResponse', Constants::MODULE_SLUG)
+        return Factory::factory('ApiResponse', Api\Constants::MODULE_SLUG)
             ->setData($oClient->cluster()->stats());
     }
 }
