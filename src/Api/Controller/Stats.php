@@ -75,6 +75,6 @@ class Stats extends \Nails\Api\Controller\Base
         }
 
         return Factory::factory('ApiResponse', Api\Constants::MODULE_SLUG)
-            ->setData($oClient->cluster()->stats());
+            ->setData($oClient->getClient()->cluster()->stats());
     }
 }
