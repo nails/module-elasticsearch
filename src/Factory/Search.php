@@ -93,7 +93,15 @@ class Search
      */
     protected function parseQuery($mQuery): self
     {
-        if (is_string($mQuery)) {
+        if (empty($mQuery)) {
+            $aQuery = [
+                'body' => [
+                    'query' => [
+                        'match_all' => (object) [],
+                    ],
+                ],
+            ];
+        } elseif (is_string($mQuery)) {
             $aQuery = [
                 'body' => [
                     'query' => [
