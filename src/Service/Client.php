@@ -33,6 +33,7 @@ use Nails\Elasticsearch\Constants;
 use Nails\Common\Exception\FactoryException;
 use Nails\Config;
 use Nails\Elasticsearch\Exception\ClientException;
+use Nails\Elasticsearch\Factory\Search;
 use Nails\Elasticsearch\Interfaces\Index;
 use Nails\Elasticsearch\Traits\Log;
 use Nails\Elasticsearch\Traits\Model\SyncWithElasticsearch;
@@ -43,54 +44,6 @@ use Symfony\Component\Console\Output\OutputInterface;
  * Class Client
  *
  * @package Nails\Elasticsearch\Service
- *
- * @property Transport $transport;
- * @method bulk(array $params = [])
- * @method clearScroll(array $params = [])
- * @method count(array $params = [])
- * @method create(array $params = [])
- * @method delete(array $params = [])
- * @method deleteByQuery(array $params = [])
- * @method deleteByQueryRethrottle(array $params = [])
- * @method deleteScript(array $params = [])
- * @method exists(array $params = []): bool
- * @method existsSource(array $params = []): bool
- * @method explain(array $params = [])
- * @method fieldCaps(array $params = [])
- * @method get(array $params = [])
- * @method getScript(array $params = [])
- * @method getScriptContext(array $params = [])
- * @method getScriptLanguages(array $params = [])
- * @method getSource(array $params = [])
- * @method index(array $params = [])
- * @method info(array $params = [])
- * @method mget(array $params = [])
- * @method msearch(array $params = [])
- * @method msearchTemplate(array $params = [])
- * @method mtermvectors(array $params = [])
- * @method ping(array $params = []): bool
- * @method putScript(array $params = [])
- * @method rankEval(array $params = [])
- * @method reindex(array $params = [])
- * @method reindexRethrottle(array $params = [])
- * @method renderSearchTemplate(array $params = [])
- * @method scriptsPainlessExecute(array $params = [])
- * @method scroll(array $params = [])
- * @method search(array $params = [])
- * @method searchShards(array $params = [])
- * @method searchTemplate(array $params = [])
- * @method termvectors(array $params = [])
- * @method update(array $params = [])
- * @method updateByQuery(array $params = [])
- * @method updateByQueryRethrottle(array $params = [])
- * @method cat(): CatNamespace
- * @method cluster(): ClusterNamespace
- * @method indices(): IndicesNamespace
- * @method ingest(): IngestNamespace
- * @method nodes(): NodesNamespace
- * @method snapshot(): SnapshotNamespace
- * @method tasks(): TasksNamespace
- * @method extractArgument(array &$params, string $arg)
  */
 class Client
 {
@@ -123,6 +76,18 @@ class Client
     // --------------------------------------------------------------------------
 
     /**
+     * Returns the official Elasticsearch client
+     *
+     * @return \Elasticsearch\Client
+     */
+    public function getClient(): \Elasticsearch\Client
+    {
+        return $this->oElasticsearchClient;
+    }
+
+    // --------------------------------------------------------------------------
+
+    /**
      * Returns whether Elasticsearch is available
      *
      * @param integer $iTimeout The length of time to wait before considering the connection dead
@@ -135,24 +100,22 @@ class Client
             $iTimeout = Config::get('ELATICSEARCH_TIMEOUT', 2);
         }
 
-        if (empty($this->oElasticsearchClient)) {
-            return false;
-        }
-
         $bResult = true;
         ob_start();
 
         try {
 
-            $oResult = $this->oElasticsearchClient->exists([
-                'index'  => 'test',
-                'type'   => 'test',
-                'id'     => 'test',
-                'client' => [
-                    'timeout'         => $iTimeout,
-                    'connect_timeout' => $iTimeout,
-                ],
-            ]);
+            $oResult = $this
+                ->getClient()
+                ->exists([
+                    'index'  => 'test',
+                    'type'   => 'test',
+                    'id'     => 'test',
+                    'client' => [
+                        'timeout'         => $iTimeout,
+                        'connect_timeout' => $iTimeout,
+                    ],
+                ]);
 
         } catch (\Elasticsearch\Common\Exceptions\NoNodesAvailableException $e) {
             $bResult = false;
@@ -188,7 +151,7 @@ class Client
         try {
 
             $this
-                ->oElasticsearchClient
+                ->getClient()
                 ->indices()
                 ->delete([
                     'index' => '*',
@@ -233,18 +196,14 @@ class Client
 
         foreach ($aIndexes as $oIndex) {
 
-            $sIndexString = sprintf(
-                '<comment>%s</comment> [<comment>%s</comment>]',
-                $oIndex->getIndex(),
-                get_class($oIndex)
-            );
+            $sIndexString = $this->formatIndexAsString($oIndex);
 
             try {
 
                 $this->log($oOutput, sprintf('- Deleting %s... ', $sIndexString));
 
                 $this
-                    ->oElasticsearchClient
+                    ->getClient()
                     ->indices()
                     ->delete([
                         'index' => $oIndex->getIndex(),
@@ -273,7 +232,7 @@ class Client
                 $this->log($oOutput, sprintf('- Creating %s... ', $sIndexString));
 
                 $this
-                    ->oElasticsearchClient
+                    ->getClient()
                     ->indices()
                     ->create([
                         'index' => $oIndex->getIndex(),
@@ -323,15 +282,9 @@ class Client
 
         foreach ($aIndexes as $oIndex) {
 
-            $sIndexString = sprintf(
-                '<comment>%s</comment> [<comment>%s</comment>]',
-                $oIndex->getIndex(),
-                get_class($oIndex)
-            );
-
             $sTitle = sprintf(
                 'Warming %s',
-                $sIndexString
+                $this->formatIndexAsString($oIndex)
             );
             $this->logln($oOutput, $sTitle);
             $this->logln(
@@ -354,11 +307,73 @@ class Client
     // --------------------------------------------------------------------------
 
     /**
+     * Indexes an item
+     *
+     * @param Index $oIndex The index to index to
+     * @param mixed $mId    The ID of the document being indexed
+     * @param mixed $mBody  The body of the document
+     *
+     * @return $this
+     */
+    public function index(Index $oIndex, $mId, $mBody): self
+    {
+        $this
+            ->getClient()
+            ->index([
+                'id'    => $mId,
+                'index' => $oIndex->getIndex(),
+                'body'  => $mBody,
+            ]);
+
+        return $this;
+    }
+
+    // --------------------------------------------------------------------------
+
+    /**
+     * Deletes an indexed item
+     *
+     * @param Index $oIndex The index to index to
+     * @param mixed $mId    The ID of the document being indexed
+     *
+     * @return $this
+     */
+    public function delete(Index $oIndex, $mId): self
+    {
+        $this
+            ->getClient()
+            ->delete([
+                'id'    => $mId,
+                'index' => $oIndex->getIndex(),
+            ]);
+
+        return $this;
+    }
+
+    // --------------------------------------------------------------------------
+
+    /**
+     * Returns a new instance of Search
+     *
+     * @param array|string       $mQuery   The query parameters, or search keywords
+     * @param Index[]|Index|null $mIndexes An array of indexes to search, or a singular index, defaults to all indexes
+     *
+     * @return object
+     * @throws FactoryException
+     */
+    public function search($mQuery, $mIndexes = null): Search
+    {
+        return Factory::factory('Search', Constants::MODULE_SLUG, $this->getClient(), $mQuery, $mIndexes);
+    }
+
+    // --------------------------------------------------------------------------
+
+    /**
      * Discovered Elasticsearch index definitions
      *
      * @return Index[]
      */
-    protected function discoverIndexes(): array
+    public function discoverIndexes(): array
     {
         $aIndexes = [];
         foreach (Components::available() as $oComponent) {
@@ -376,6 +391,15 @@ class Client
 
     // --------------------------------------------------------------------------
 
+    /**
+     * Logs an Elasticsearch error response
+     *
+     * @param OutputInterface $oOutput   The output interface to log to
+     * @param string          $sError    The generic error, i.e what went wrong
+     * @param object          $oResponse The actual response from ES
+     *
+     * @return $this
+     */
     protected function logEsError(OutputInterface $oOutput, string $sError, object $oResponse): self
     {
         if ($oOutput !== null) {
@@ -394,35 +418,18 @@ class Client
     // --------------------------------------------------------------------------
 
     /**
-     * Routes calls to this class to the Elasticsearch client
+     * Formats an index as a string for logging
      *
-     * @param string $sMethod    The method to call
-     * @param array  $aArguments An array of arguments passed to the method
+     * @param Index $oIndex The index to format
      *
-     * @return mixed
+     * @return string
      */
-    public function __call($sMethod, $aArguments)
+    protected function formatIndexAsString(Index $oIndex): string
     {
-        return call_user_func_array(
-            [
-                $this->oElasticsearchClient,
-                $sMethod,
-            ],
-            $aArguments
+        return sprintf(
+            '<comment>%s</comment> [<comment>%s</comment>]',
+            $oIndex->getIndex(),
+            get_class($oIndex)
         );
-    }
-
-    // --------------------------------------------------------------------------
-
-    /**
-     * Routes undefined properties to the Elasticsearch client
-     *
-     * @param string $sProperty The property to get
-     *
-     * @return mixed
-     */
-    public function __get($sProperty)
-    {
-        return $this->oElasticsearchClient->{$sProperty};
     }
 }
