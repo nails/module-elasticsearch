@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * Elasticsearch Search Helper
+ *
+ * @package     Nails
+ * @subpackage  module-elasticsearch
+ * @category    Factory
+ * @author      Nails Dev Team
+ * @link        https://docs.nailsapp.co.uk/modules/other/elasticsearch
+ */
+
 namespace Nails\Elasticsearch\Factory;
 
 use Nails\Elasticsearch\Exception\ClientException;

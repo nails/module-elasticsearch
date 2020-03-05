@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * Elasticsearch Index Interface
+ *
+ * @package     Nails
+ * @subpackage  module-elasticsearch
+ * @category    Interface
+ * @author      Nails Dev Team
+ * @link        https://docs.nailsapp.co.uk/modules/other/elasticsearch
+ */
+
 namespace Nails\Elasticsearch\Interfaces;
 
 use Nails\Elasticsearch\Service\Client;

@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * Elasticsearch Constants
+ *
+ * @package     Nails
+ * @subpackage  module-elasticsearch
+ * @category    Constants
+ * @author      Nails Dev Team
+ * @link        https://docs.nailsapp.co.uk/modules/other/elasticsearch
+ */
+
 namespace Nails\Elasticsearch;
 
 /**

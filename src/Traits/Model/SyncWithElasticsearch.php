@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * Elasticsearch Trait: Sync a model with an Elasticsearch index
+ *
+ * @package     Nails
+ * @subpackage  module-elasticsearch
+ * @category    Trait
+ * @author      Nails Dev Team
+ * @link        https://docs.nailsapp.co.uk/modules/other/elasticsearch
+ */
+
 namespace Nails\Elasticsearch\Traits\Model;
 
 use Nails\Common\Exception\FactoryException;

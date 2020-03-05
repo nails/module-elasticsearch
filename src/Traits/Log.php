@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * Elasticsearch Trait: Write to the log, if available
+ *
+ * @package     Nails
+ * @subpackage  module-elasticsearch
+ * @category    Trait
+ * @author      Nails Dev Team
+ * @link        https://docs.nailsapp.co.uk/modules/other/elasticsearch
+ */
+
 namespace Nails\Elasticsearch\Traits;
 
 use Nails\Elasticsearch\Service\Client;

@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * Elasticsearch Console Command: Warm
+ *
+ * @package     Nails
+ * @subpackage  module-elasticsearch
+ * @category    Console
+ * @author      Nails Dev Team
+ * @link        https://docs.nailsapp.co.uk/modules/other/elasticsearch
+ */
+
 namespace Nails\Elasticsearch\Console\Command;
 
 use Nails\Console\Command\Base;

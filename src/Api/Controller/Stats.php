@@ -1,13 +1,12 @@
 <?php
-
 /**
- * Returns information about the currently logged in user
+ * Elasticsearch API controller: Stats
  *
  * @package     Nails
- * @subpackage  module-api
- * @category    Controller
+ * @subpackage  module-elasticsearch
+ * @category    Api Controller
  * @author      Nails Dev Team
- * @link
+ * @link        https://docs.nailsapp.co.uk/modules/other/elasticsearch
  */
 
 namespace Nails\Elasticsearch\Api\Controller;

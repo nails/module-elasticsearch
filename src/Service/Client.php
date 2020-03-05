@@ -5,9 +5,9 @@
  *
  * @package     Nails
  * @subpackage  module-elasticsearch
- * @category    Library
+ * @category    Service
  * @author      Nails Dev Team
- * @link
+ * @link        https://docs.nailsapp.co.uk/modules/other/elasticsearch
  */
 
 namespace Nails\Elasticsearch\Service;
