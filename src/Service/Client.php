@@ -12,7 +12,6 @@
 
 namespace Nails\Elasticsearch\Service;
 
-use App\Model\Listing;
 use Elasticsearch\Common\Exceptions\BadRequest400Exception;
 use Elasticsearch\Common\Exceptions\ElasticsearchException;
 use Elasticsearch\Common\Exceptions\Missing404Exception;
