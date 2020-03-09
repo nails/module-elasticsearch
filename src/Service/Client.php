@@ -400,7 +400,7 @@ class Client
      *
      * @return $this
      */
-    protected function logEsError(OutputInterface $oOutput, string $sError, object $oResponse): self
+    protected function logEsError(?OutputInterface $oOutput, string $sError, object $oResponse): self
     {
         if ($oOutput !== null) {
             $this->logln(
