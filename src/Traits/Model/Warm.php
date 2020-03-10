@@ -54,7 +54,8 @@ trait Warm
     public function warm(Client $oClient, OutputInterface $oOutput)
     {
         /** @var Database $oDb */
-        $oDb    = Factory::service('Database');
+        $oDb = Factory::service('Database');
+        /** @var SyncWithElasticsearch $oModel */
         $oModel = $this->getModel();
 
         if (!Tools::classUses($oModel, SyncWithElasticsearch::class)) {
@@ -70,18 +71,44 @@ trait Warm
         $oItems = $oModel->getAllRawQuery();
 
         while ($oItem = $oItems->unbuffered_row()) {
+            try {
 
-            $this->logln(
-                $oOutput,
-                sprintf(
-                    '- Indexing item <info>#%s – %s</info>',
-                    $oItem->id,
-                    $oItem->label ?? 'No label'
-                )
-            );
+                $this->log(
+                    $oOutput,
+                    sprintf(
+                        '- Indexing item <info>#%s – %s</info>... ',
+                        $oItem->id,
+                        $oItem->label ?? 'No label'
+                    )
+                );
 
-            $oModel->syncToElasticsearch($oItem->id);
-            $oDb->flushCache();
+                $oModel->syncToElasticsearch($oItem->id);
+                $this->logln($oOutput, '<info>done</info>');
+
+            } catch (\Exception $e) {
+
+                $oError = @json_decode($e->getMessage());
+                $sError = json_last_error()
+                    ? $e->getMessage()
+                    : ($oError->error->reason ?? $e->getMessage());
+
+                $this->logln($oOutput, '<error>Failed</error>');
+                $this->logln($oOutput, '<error>' . $sError . '</error>');
+
+                trigger_error(
+                    sprintf(
+                        'Failed to sync item with Elasticsearch [Index: %s] [Model: %s] [ID: %s] [Error: %s]',
+                        get_called_class(),
+                        get_class($oModel),
+                        $oItem->id,
+                        $sError
+                    ),
+                    E_USER_WARNING
+                );
+
+            } finally {
+                $oDb->flushCache();
+            }
         }
 
         return $this;
