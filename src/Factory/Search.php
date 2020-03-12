@@ -212,14 +212,20 @@ class Search
      */
     public function execute(int $iSize = null, int $iPage = 0): Results
     {
-        $iSize    = $iSize ?? static::DEFAULT_SIZE;
+        $iSize = $iSize ?? static::DEFAULT_SIZE;
+        $iPage = $iPage < 0 ? 0 : $iPage;
+
         $aResults = $this
             ->oClient
             ->search(
                 $this->compile($iSize, $iPage)
             );
 
-        return Factory::factory('SearchResults', Constants::MODULE_SLUG, $aResults);
+        return Factory::factory(
+            'SearchResults',
+            Constants::MODULE_SLUG,
+            ['pagination' => ['size' => $iSize, 'page' => $iPage]] + $aResults
+        );
     }
 
     // --------------------------------------------------------------------------
@@ -248,7 +254,7 @@ class Search
                         )
                     ),
                 'size'  => $iSize,
-                'from'  => $iSize * (--$iPage < 0 ? 0 : $iPage)
+                'from'  => $iSize * (--$iPage < 0 ? 0 : $iPage),
             ],
             $this->aQuery
         );
