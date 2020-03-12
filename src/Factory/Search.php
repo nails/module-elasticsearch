@@ -248,7 +248,7 @@ class Search
                         )
                     ),
                 'size'  => $iSize,
-                'from'  => $iPage,
+                'from'  => $iSize * (--$iPage < 0 ? 0 : $iPage)
             ],
             $this->aQuery
         );
