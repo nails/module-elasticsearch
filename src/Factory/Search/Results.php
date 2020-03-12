@@ -54,7 +54,7 @@ class Results
         $this->timed_out = getFromArray('timed_out', $aResults);
         $this->shards    = getFromArray('_shards', $aResults);
         $this->total     = getFromArray('total', $aHits, []);
-        $this->total     = getFromArray('max_score', $aHits);
+        $this->max_score = getFromArray('max_score', $aHits);
         $this->hits      = array_map(
             function (array $aHit) {
                 return Factory::factory('SearchResultsHit', Constants::MODULE_SLUG, $aHit);
