@@ -1,34 +1,42 @@
 <?php
 
 /**
- * Elasticsearch Index Interface
- *
- * @package     Nails
- * @subpackage  module-elasticsearch
- * @category    Interface
- * @author      Nails Dev Team
- * @link        https://docs.nailsapp.co.uk/modules/other/elasticsearch
+ * This file is the template for the contents of indexes
+ * Used by the console command when creating indexes.
  */
 
-namespace Nails\Elasticsearch\Interfaces;
+return <<<'EOD'
+<?php
+
+/**
+ * The "{{INDEX}}" Elasticsearch index definition
+ *
+ * @package  App
+ * @category Elasticsearch\Index
+ */
+
+namespace {{NAMESPACE}};
 
 use Nails\Elasticsearch\Service\Client;
 use stdClass;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Interface Index
+ * Class {{CLASS_NAME}}
  *
- * @package Nails\Elasticsearch\Interfaces
+ * @package {{NAMESPACE}}
  */
-interface Index
+class {{CLASS_NAME}}
 {
     /**
      * Returns the name of the index
      *
      * @return string
      */
-    public static function getIndex(): string;
+    public static function getIndex(): string
+    {
+        return '{{INDEX}}';
+    }
 
     // --------------------------------------------------------------------------
 
@@ -37,7 +45,10 @@ interface Index
      *
      * @return stdClass
      */
-    public function getSettings(): stdClass;
+    public function getSettings(): stdClass
+    {
+        return (object) [];
+    }
 
     // --------------------------------------------------------------------------
 
@@ -46,7 +57,10 @@ interface Index
      *
      * @return stdClass
      */
-    public function getMappings(): stdClass;
+    public function getMappings(): stdClass
+    {
+        return (object) [];
+    }
 
     // --------------------------------------------------------------------------
 
@@ -58,5 +72,11 @@ interface Index
      *
      * @return $this
      */
-    public function warm(Client $oClient, OutputInterface $oOutput);
+    public function warm(Client $oClient, OutputInterface $oOutput)
+    {
+        //  @todo  - Define index warming behaviour
+        return $this;
+    }
 }
+
+EOD;
