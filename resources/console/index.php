@@ -17,7 +17,7 @@ return <<<'EOD'
 
 namespace {{NAMESPACE}};
 
-use Nails\Elasticsearch\Service\Client;
+use Nails\Elasticsearch;
 use stdClass;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -26,7 +26,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  *
  * @package {{NAMESPACE}}
  */
-class {{CLASS_NAME}}
+class {{CLASS_NAME}} implements Elasticsearch\Interfaces\Index
 {
     /**
      * Returns the name of the index
@@ -67,12 +67,12 @@ class {{CLASS_NAME}}
     /**
      * Warms the index
      *
-     * @param Client          $oClient The Elasticsearch client
-     * @param OutputInterface $oOutput The output interface being used
+     * @param Elasticsearch\Service\Client $oClient The Elasticsearch client
+     * @param OutputInterface              $oOutput The output interface being used
      *
      * @return $this
      */
-    public function warm(Client $oClient, OutputInterface $oOutput)
+    public function warm(Elasticsearch\Service\Client $oClient, OutputInterface $oOutput)
     {
         //  @todo  - Define index warming behaviour
         return $this;
