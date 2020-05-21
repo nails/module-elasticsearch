@@ -41,7 +41,7 @@ trait SyncWithElasticsearch
     // --------------------------------------------------------------------------
 
     /**
-     * Returns a control array to sue when saving the item to Elasticsearch
+     * Returns a control array to use when saving the item to Elasticsearch
      *
      * @return array
      */
@@ -72,21 +72,31 @@ trait SyncWithElasticsearch
     /**
      * Saves the object to Elasticsearch
      *
-     * @param int $iId The ID of the item to save
+     * @param int         $iId    The ID of the item to save
+     * @param string|null $sEvent The event which triggered the sync, if any
      *
      * @throws FactoryException
      */
-    public function syncToElasticsearch(int $iId)
+    public function syncToElasticsearch(int $iId, ?string $sEvent)
     {
         /** @var Client $oClient */
         $oClient = Factory::service('Client', Constants::MODULE_SLUG);
-        $oItem   = $this->getById($iId, $this->syncToElasticsearchData());
-        $oClient
-            ->index(
-                $this->syncWithIndex(),
-                $oItem->id,
-                $oItem
-            );
+
+        if ($sEvent === static::EVENT_DELETED) {
+            $oClient
+                ->delete(
+                    $this->syncWithIndex(),
+                    $iId
+                );
+        } else {
+            $oItem = $this->getById($iId, $this->syncToElasticsearchData());
+            $oClient
+                ->index(
+                    $this->syncWithIndex(),
+                    $oItem->id,
+                    $oItem
+                );
+        }
     }
 
     // --------------------------------------------------------------------------
@@ -109,13 +119,13 @@ trait SyncWithElasticsearch
             if (!is_int($iId)) {
                 throw new ElasticsearchException(
                     sprintf(
-                        'Expected integer when syncing to Elasricsearch, recieved %s',
+                        'Expected integer when syncing to Elasticsearch, recieved %s',
                         gettype($iId)
                     )
                 );
             }
 
-            $this->syncToElasticsearch($iId);
+            $this->syncToElasticsearch($iId, $sEvent);
         }
     }
 }

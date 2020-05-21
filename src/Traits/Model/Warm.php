@@ -82,7 +82,7 @@ trait Warm
                     )
                 );
 
-                $oModel->syncToElasticsearch($oItem->id);
+                $oModel->syncToElasticsearch($oItem->id, null);
                 $this->logln($oOutput, '<info>done</info>');
 
             } catch (\Exception $e) {
