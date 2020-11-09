@@ -7,7 +7,7 @@
   "repository": "https://github.com/nails/module-cdn",
   "devDependencies": {
     "autoprefixer": "^9.8.6",
-    "css-loader": "^5.0.0",
+    "css-loader": "^5.0.1",
     "mini-css-extract-plugin": "^1.2.1",
     "sass": "^1.29",
     "postcss-loader": "^3.0.0",
