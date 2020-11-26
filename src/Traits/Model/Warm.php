@@ -12,8 +12,6 @@
 
 namespace Nails\Elasticsearch\Traits\Model;
 
-use Nails\Common\Exception\FactoryException;
-use Nails\Common\Exception\ModelException;
 use Nails\Common\Helper\Tools;
 use Nails\Common\Model\Base;
 use Nails\Common\Service\Database;
@@ -68,7 +66,12 @@ trait Warm
             );
         }
 
-        $oItems = $oModel->getAllRawQuery();
+        // Select only `id` to avoid flooding memory on large tables
+        $oItems = $oModel->getAllRawQuery([
+            'select' => [
+                $oModel->getColumn('id'),
+            ],
+        ]);
 
         while ($oItem = $oItems->unbuffered_row()) {
             try {
@@ -76,9 +79,8 @@ trait Warm
                 $this->log(
                     $oOutput,
                     sprintf(
-                        '- Indexing item <info>#%s – %s</info>... ',
+                        '- Indexing item <info>#%s</info>... ',
                         $oItem->id,
-                        $oItem->label ?? 'No label'
                     )
                 );
 
