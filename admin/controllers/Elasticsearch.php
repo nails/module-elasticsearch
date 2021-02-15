@@ -33,7 +33,7 @@ class Elasticsearch extends Base
     public static function announce()
     {
         if (userHasPermission('admin:elasticsearch:elasticsearch:view')) {
-            $oNavGroup = Factory::factory('Nav', 'nails/module-admin');
+            $oNavGroup = Factory::factory('Nav', \Nails\Admin\Constants::MODULE_SLUG);
             $oNavGroup->setLabel('Elasticsearch');
             $oNavGroup->setIcon('fa-search');
             $oNavGroup->addAction('Statistics');
