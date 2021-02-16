@@ -109,7 +109,7 @@ trait SyncWithElasticsearch
      *
      * @throws ModelException
      */
-    protected function triggerEvent($sEvent, array $aData)
+    protected function triggerEvent($sEvent, array $aData): Base
     {
         parent::triggerEvent($sEvent, $aData);
 
@@ -127,5 +127,7 @@ trait SyncWithElasticsearch
 
             $this->syncToElasticsearch($iId, $sEvent);
         }
+
+        return $this;
     }
 }
