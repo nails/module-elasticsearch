@@ -53,7 +53,7 @@ class Warm extends Base
     {
         parent::execute($oInput, $oOutput);
 
-        $this->banner('Elasticserch: Warm');
+        $this->banner('Elasticsearch: Warm');
 
         // --------------------------------------------------------------------------
 

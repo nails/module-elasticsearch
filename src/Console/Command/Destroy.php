@@ -54,7 +54,7 @@ class Destroy extends Base
     {
         parent::execute($oInput, $oOutput);
 
-        $this->banner('Elasticserch: Destroy');
+        $this->banner('Elasticsearch: Destroy');
 
         // --------------------------------------------------------------------------
 

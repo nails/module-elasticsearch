@@ -54,7 +54,7 @@ class Reset extends Base
     {
         parent::execute($oInput, $oOutput);
 
-        $this->banner('Elasticserch: Reset');
+        $this->banner('Elasticsearch: Reset');
 
         // --------------------------------------------------------------------------
 
