@@ -237,11 +237,17 @@ class Index extends Base
 
                 $hHandle = fopen($aIndex['PATH'], 'w');
                 if (!$hHandle) {
-                    throw new DoesNotExistException('Failed to open ' . $sPath . ' for writing');
+                    throw new DoesNotExistException(sprintf(
+                        'Failed to open %s for writing',
+                        $aIndex['PATH']
+                    ));
                 }
 
                 if (fwrite($hHandle, $sIndex) === false) {
-                    throw new IsNotWritableException('Failed to write to ' . $sPath);
+                    throw new IsNotWritableException(sprintf(
+                        'Failed to write to %s',
+                        $aIndex['PATH']
+                    ));
                 }
 
                 fclose($hHandle);

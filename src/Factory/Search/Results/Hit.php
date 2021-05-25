@@ -12,6 +12,8 @@
 
 namespace Nails\Elasticsearch\Factory\Search\Results;
 
+use Nails\Common\Helper\ArrayHelper;
+
 /**
  * Class Hit
  *
@@ -43,10 +45,10 @@ class Hit
      */
     public function __construct(array $aHit)
     {
-        $this->index  = getFromArray('_index', $aHit);
-        $this->type   = getFromArray('_type', $aHit);
-        $this->id     = getFromArray('_id', $aHit);
-        $this->score  = getFromArray('_score', $aHit);
-        $this->source = json_decode(json_encode(getFromArray('_source', $aHit)));
+        $this->index  = ArrayHelper::get('_index', $aHit);
+        $this->type   = ArrayHelper::get('_type', $aHit);
+        $this->id     = ArrayHelper::get('_id', $aHit);
+        $this->score  = ArrayHelper::get('_score', $aHit);
+        $this->source = json_decode(json_encode(ArrayHelper::get('_source', $aHit)));
     }
 }

@@ -218,7 +218,7 @@ class Client
                     $this->logEsError(
                         $oOutput,
                         'Failed to delete index',
-                        json_decode((string) $e->getResponse()->getBody())
+                        json_decode($e->getMessage())
                     );
 
                 } else {
@@ -357,7 +357,7 @@ class Client
      * @param array|string       $mQuery   The query parameters, or search keywords
      * @param Index[]|Index|null $mIndexes An array of indexes to search, or a singular index, defaults to all indexes
      *
-     * @return object
+     * @return Search
      * @throws FactoryException
      */
     public function search($mQuery, $mIndexes = null): Search

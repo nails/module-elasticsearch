@@ -83,10 +83,7 @@ class Search
     /**
      * Parses the query
      *
-     * @param $mQuery
-     */
-    /**
-     * @param $mQuery
+     * @param string|array|null $mQuery
      *
      * @return $this
      * @throws ClientException
@@ -153,12 +150,14 @@ class Search
      */
     protected function parseIndexes($mIndexes): self
     {
-        if ($mIndexes === null) {
-            $aIndexes = null;
-        } elseif (is_array($mIndexes)) {
+        if (is_array($mIndexes)) {
             $aIndexes = $mIndexes;
-        } elseif ($mIndex instanceof Index) {
-            $aIndexes = [$mIndex];
+
+        } elseif ($mIndexes instanceof Index) {
+            $aIndexes = [$mIndexes];
+
+        } else {
+            $aIndexes = null;
         }
 
         $this->setIndexes($aIndexes);

@@ -12,6 +12,7 @@
 
 namespace Nails\Elasticsearch\Factory\Search;
 
+use Nails\Common\Helper\ArrayHelper;
 use Nails\Elasticsearch\Constants;
 use Nails\Factory;
 
@@ -53,18 +54,18 @@ class Results
      */
     public function __construct(array $aResults)
     {
-        $aHits            = getFromArray('hits', $aResults, []);
-        $this->pagination = getFromArray('pagination', $aResults);
-        $this->took       = getFromArray('took', $aResults);
-        $this->timed_out  = getFromArray('timed_out', $aResults);
-        $this->shards     = getFromArray('_shards', $aResults);
-        $this->total      = getFromArray('total', $aHits, []);
-        $this->max_score  = getFromArray('max_score', $aHits);
+        $aHits            = ArrayHelper::get('hits', $aResults, []);
+        $this->pagination = ArrayHelper::get('pagination', $aResults);
+        $this->took       = ArrayHelper::get('took', $aResults);
+        $this->timed_out  = ArrayHelper::get('timed_out', $aResults);
+        $this->shards     = ArrayHelper::get('_shards', $aResults);
+        $this->total      = ArrayHelper::get('total', $aHits, []);
+        $this->max_score  = ArrayHelper::get('max_score', $aHits);
         $this->hits       = array_map(
             function (array $aHit) {
                 return Factory::factory('SearchResultsHit', Constants::MODULE_SLUG, $aHit);
             },
-            getFromArray('hits', $aHits, [])
+            ArrayHelper::get('hits', $aHits, [])
         );
     }
 }

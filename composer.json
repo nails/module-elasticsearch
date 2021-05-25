@@ -21,7 +21,12 @@
     "support": {
         "email": "hello@nailsapp.co.uk"
     },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
     "require": {
+        "nails/common": "dev-develop",
+        "nails/module-api": "dev-develop",
+        "nails/module-console": "dev-develop",
         "elasticsearch/elasticsearch": "~7.0"
     },
     "require-dev": {

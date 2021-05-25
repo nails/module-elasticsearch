@@ -25,8 +25,8 @@ trait Log
     /**
      * Writes to the output interface, if available
      *
-     * @param OutputInterface|null $oOutput  An output interface to log to
-     * @param string[]             ...$sLine Messages to log
+     * @param OutputInterface|null $oOutput   An output interface to log to
+     * @param string[]             ...$aLines Messages to log
      *
      * @return $this
      */
@@ -45,8 +45,8 @@ trait Log
     /**
      * Writes to the output interface, if available
      *
-     * @param OutputInterface|null $oOutput  An output interface to log to
-     * @param string[]             ...$sLine Messages to log
+     * @param OutputInterface|null $oOutput   An output interface to log to
+     * @param string[]             ...$aLines Messages to log
      *
      * @return $this
      */
