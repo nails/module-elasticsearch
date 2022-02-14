@@ -27,7 +27,7 @@
         "nails/common": "dev-develop",
         "nails/module-api": "dev-develop",
         "nails/module-console": "dev-develop",
-        "elasticsearch/elasticsearch": "~7.0"
+        "elasticsearch/elasticsearch": "~8.0"
     },
     "require-dev": {
         "phpunit/phpunit": "9.*",
