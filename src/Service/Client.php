@@ -12,17 +12,17 @@
 
 namespace Nails\Elasticsearch\Service;
 
-use Elasticsearch\Common\Exceptions\BadRequest400Exception;
-use Elasticsearch\Common\Exceptions\ElasticsearchException;
-use Elasticsearch\Common\Exceptions\Missing404Exception;
-use Elasticsearch\Namespaces\CatNamespace;
-use Elasticsearch\Namespaces\ClusterNamespace;
-use Elasticsearch\Namespaces\IndicesNamespace;
-use Elasticsearch\Namespaces\IngestNamespace;
-use Elasticsearch\Namespaces\NodesNamespace;
-use Elasticsearch\Namespaces\SnapshotNamespace;
-use Elasticsearch\Namespaces\TasksNamespace;
-use Elasticsearch\Transport;
+use Elastic\Elasticsearch\Common\Exceptions\BadRequest400Exception;
+use Elastic\Elasticsearch\Common\Exceptions\ElasticsearchException;
+use Elastic\Elasticsearch\Common\Exceptions\Missing404Exception;
+use Elastic\Elasticsearch\Namespaces\CatNamespace;
+use Elastic\Elasticsearch\Namespaces\ClusterNamespace;
+use Elastic\Elasticsearch\Namespaces\IndicesNamespace;
+use Elastic\Elasticsearch\Namespaces\IngestNamespace;
+use Elastic\Elasticsearch\Namespaces\NodesNamespace;
+use Elastic\Elasticsearch\Namespaces\SnapshotNamespace;
+use Elastic\Elasticsearch\Namespaces\TasksNamespace;
+use Elastic\Elasticsearch\Transport;
 use GuzzleHttp\Exception\RequestException;
 use Nails\Common\Factory\HttpRequest\Delete;
 use Nails\Common\Factory\HttpResponse;
@@ -53,7 +53,7 @@ class Client
     /**
      * The Elasticsearch client
      *
-     * @var \Elasticsearch\Client
+     * @var \Elastic\Elasticsearch\Client
      */
     private $oElasticsearchClient;
 
@@ -77,9 +77,9 @@ class Client
     /**
      * Returns the official Elasticsearch client
      *
-     * @return \Elasticsearch\Client
+     * @return \Elastic\Elasticsearch\Client
      */
-    public function getClient(): \Elasticsearch\Client
+    public function getClient(): \Elastic\Elasticsearch\Client
     {
         return $this->oElasticsearchClient;
     }
@@ -116,7 +116,7 @@ class Client
                     ],
                 ]);
 
-        } catch (\Elasticsearch\Common\Exceptions\NoNodesAvailableException $e) {
+        } catch (\Elastic\Elasticsearch\Common\Exceptions\NoNodesAvailableException $e) {
             $bResult = false;
         } catch (\Exception $e) {
             $bResult = true;

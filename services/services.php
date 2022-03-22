@@ -13,8 +13,8 @@ return [
                 return new Elasticsearch\Service\Client();
             }
         },
-        'ElasticsearchClient' => function (): \Elasticsearch\Client {
-            return \Elasticsearch\ClientBuilder::create()
+        'ElasticsearchClient' => function (): \Elastic\Elasticsearch\Client {
+            return \Elastic\Elasticsearch\ClientBuilder::create()
                 ->setHosts(
                     Config::get('ELASTICSEARCH_HOSTS', ['127.0.0.1:9200'])
                 )
@@ -23,7 +23,7 @@ return [
     ],
     'factories' => [
         'Search'           => function (
-            \Elasticsearch\Client $oClient,
+            \Elastic\Elasticsearch\Client $oClient,
             $mQuery,
             $mIndexes = null
         ): Elasticsearch\Factory\Search {
