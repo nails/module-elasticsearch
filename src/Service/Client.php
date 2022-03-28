@@ -15,6 +15,7 @@ namespace Nails\Elasticsearch\Service;
 use Elastic\Elasticsearch\Common\Exceptions\BadRequest400Exception;
 use Elastic\Elasticsearch\Common\Exceptions\ElasticsearchException;
 use Elastic\Elasticsearch\Common\Exceptions\Missing404Exception;
+use Elastic\Elasticsearch\Exception\ClientResponseException;
 use Elastic\Elasticsearch\Namespaces\CatNamespace;
 use Elastic\Elasticsearch\Namespaces\ClusterNamespace;
 use Elastic\Elasticsearch\Namespaces\IndicesNamespace;
@@ -136,7 +137,7 @@ class Client
      *
      * @return $this
      */
-    public function destroy(OutputInterface $oOutput = null): self
+    public function destroy(OutputInterface $oOutput = null, array $aIndexes = null): self
     {
         if (!$this->isAvailable()) {
             $this->logln($oOutput, 'Elasticsearch is not available');
@@ -145,25 +146,44 @@ class Client
             );
         }
 
-        $this->logln($oOutput, 'Issuing destroy command...');
+        $aIndexes = $aIndexes ?? $this->discoverIndexes();
+        if (empty($aIndexes)) {
+            $this->logln($oOutput, 'No indexes to destroy');
+            return $this;
+        }
 
-        try {
+        foreach ($aIndexes as $oIndex) {
+            try {
 
-            $this
-                ->getClient()
-                ->indices()
-                ->delete([
-                    'index' => '*',
-                ]);
+                $sIndexString = $this->formatIndexAsString($oIndex);
 
-            $this->logln($oOutput, 'Command acknowledged by cluster');
+                $this->log($oOutput, sprintf(
+                    'Destroying %s... ',
+                    $sIndexString
+                ));
 
-        } catch (ElasticsearchException $e) {
-            $this->logEsError(
-                $oOutput,
-                'Failed to delete index',
-                json_decode($e->getMessage())
-            );
+                $this
+                    ->getClient()
+                    ->indices()
+                    ->delete([
+                        'index' => $oIndex::getIndex(),
+                    ]);
+
+            } catch (ClientResponseException $e) {
+                //  Tolerate deletion of non-existing index - amounts to the same thing
+                if ($e->getCode() !== HttpCodes::STATUS_NOT_FOUND) {
+                    $this->logEsError(
+                        $oOutput,
+                        'Failed to delete index',
+                        json_decode(
+                            (string) $e->getResponse()->getBody()
+                        )
+                    );
+                }
+
+            } finally {
+                $this->logln($oOutput, '<info>done</info>');
+            }
         }
 
         return $this;
@@ -196,39 +216,11 @@ class Client
         foreach ($aIndexes as $oIndex) {
 
             $sIndexString = $this->formatIndexAsString($oIndex);
+            $this->destroy($oOutput, [$oIndex]);
 
             try {
 
-                $this->log($oOutput, sprintf('- Deleting %s... ', $sIndexString));
-
-                $this
-                    ->getClient()
-                    ->indices()
-                    ->delete([
-                        'index' => $oIndex->getIndex(),
-                    ]);
-
-                $this->logln($oOutput, '<info>done</info>');
-
-            } catch (ElasticsearchException $e) {
-
-                //  Tolerate deletion of non-existing index - amounts to the same thing
-                if (!$e instanceof Missing404Exception) {
-
-                    $this->logEsError(
-                        $oOutput,
-                        'Failed to delete index',
-                        json_decode($e->getMessage())
-                    );
-
-                } else {
-                    $this->logln($oOutput, '<info>done</info>');
-                }
-            }
-
-            try {
-
-                $this->log($oOutput, sprintf('- Creating %s... ', $sIndexString));
+                $this->log($oOutput, sprintf('Creating %s... ', $sIndexString));
 
                 $this
                     ->getClient()
