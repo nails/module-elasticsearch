@@ -18,6 +18,11 @@ return [
                 ->setHosts(
                     Config::get('ELASTICSEARCH_HOSTS', ['127.0.0.1:9200'])
                 )
+                ->setBasicAuthentication(
+                    Config::get('ELASTICSEARCH_USERNAME', 'elastic'),
+                    Config::get('ELASTICSEARCH_PASSWORD')
+                )
+                ->setSSLVerification(Config::get('ELASTICSEARCH_SSL_VERIFICATION', true))
                 ->build();
         },
     ],
