@@ -16,7 +16,7 @@ use Nails\Elasticsearch\Constants;
 use Nails\Elasticsearch\Exception\ClientException;
 use Nails\Elasticsearch\Factory\Search\Results;
 use Nails\Elasticsearch\Interfaces\Index;
-use Elasticsearch\Client;
+use Elastic\Elasticsearch\Client;
 use Nails\Factory;
 
 /**
