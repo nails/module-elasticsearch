@@ -218,7 +218,8 @@ class Search
             ->oClient
             ->search(
                 $this->compile($iSize, $iPage)
-            );
+            )
+            ->asArray();
 
         return Factory::factory(
             'SearchResults',
