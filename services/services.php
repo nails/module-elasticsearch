@@ -20,7 +20,7 @@ return [
                 )
                 ->setBasicAuthentication(
                     Config::get('ELASTICSEARCH_USERNAME', 'elastic'),
-                    Config::get('ELASTICSEARCH_PASSWORD')
+                    Config::get('ELASTICSEARCH_PASSWORD', '')
                 )
                 ->setSSLVerification(Config::get('ELASTICSEARCH_SSL_VERIFICATION', true))
                 ->build();
