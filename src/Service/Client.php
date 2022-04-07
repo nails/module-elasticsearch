@@ -12,21 +12,9 @@
 
 namespace Nails\Elasticsearch\Service;
 
-use Elastic\Elasticsearch\Common\Exceptions\BadRequest400Exception;
-use Elastic\Elasticsearch\Common\Exceptions\ElasticsearchException;
-use Elastic\Elasticsearch\Common\Exceptions\Missing404Exception;
+use Elastic\Elasticsearch\Exception\ElasticsearchException;
 use Elastic\Elasticsearch\Exception\ClientResponseException;
-use Elastic\Elasticsearch\Namespaces\CatNamespace;
-use Elastic\Elasticsearch\Namespaces\ClusterNamespace;
-use Elastic\Elasticsearch\Namespaces\IndicesNamespace;
-use Elastic\Elasticsearch\Namespaces\IngestNamespace;
-use Elastic\Elasticsearch\Namespaces\NodesNamespace;
-use Elastic\Elasticsearch\Namespaces\SnapshotNamespace;
-use Elastic\Elasticsearch\Namespaces\TasksNamespace;
-use Elastic\Elasticsearch\Transport;
-use GuzzleHttp\Exception\RequestException;
-use Nails\Common\Factory\HttpRequest\Delete;
-use Nails\Common\Factory\HttpResponse;
+use Elastic\Transport\Exception\NoNodeAvailableException;
 use Nails\Common\Service\HttpCodes;
 use Nails\Components;
 use Nails\Elasticsearch\Constants;
@@ -36,7 +24,6 @@ use Nails\Elasticsearch\Exception\ClientException;
 use Nails\Elasticsearch\Factory\Search;
 use Nails\Elasticsearch\Interfaces\Index;
 use Nails\Elasticsearch\Traits\Log;
-use Nails\Elasticsearch\Traits\Model\SyncWithElasticsearch;
 use Nails\Factory;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -105,7 +92,7 @@ class Client
 
         try {
 
-            $oResult = $this
+            $this
                 ->getClient()
                 ->exists([
                     'index'  => 'test',
@@ -117,10 +104,9 @@ class Client
                     ],
                 ]);
 
-        } catch (\Elastic\Elasticsearch\Common\Exceptions\NoNodesAvailableException $e) {
+        } catch (NoNodeAvailableException $e) {
             $bResult = false;
         } catch (\Exception $e) {
-            $bResult = true;
         }
 
         ob_end_clean();
