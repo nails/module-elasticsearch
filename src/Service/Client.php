@@ -476,7 +476,7 @@ class Client
     {
         return sprintf(
             '<comment>%s</comment> [<comment>%s</comment>]',
-            $oIndex->getIndex(),
+            $oIndex::getIndex(),
             get_class($oIndex)
         );
     }
