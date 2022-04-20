@@ -15,6 +15,7 @@ namespace Nails\Elasticsearch\Traits\Model;
 use Nails\Common\Exception\FactoryException;
 use Nails\Common\Exception\ModelException;
 use Nails\Common\Model\Base;
+use Nails\Common\Resource;
 use Nails\Common\Service\Database;
 use Nails\Elasticsearch\Constants;
 use Nails\Elasticsearch\Exception\ElasticsearchException;
@@ -48,6 +49,20 @@ trait SyncWithElasticsearch
     protected function syncToElasticsearchData(): array
     {
         return [];
+    }
+
+    // --------------------------------------------------------------------------
+
+    /**
+     * Provides a hook to alter the data before it is indexed
+     *
+     * @param Resource $oItem The item being indexed
+     *
+     * @return void
+     */
+    protected function beforeIndex(Resource $oItem): void
+    {
+
     }
 
     // --------------------------------------------------------------------------
@@ -90,6 +105,7 @@ trait SyncWithElasticsearch
                 );
         } else {
             $oItem = $this->getById($iId, $this->syncToElasticsearchData());
+            $this->beforeIndex($oItem);
             $oClient
                 ->index(
                     $this->syncWithIndex(),
