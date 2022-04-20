@@ -23,6 +23,7 @@ use Nails\Config;
 use Nails\Elasticsearch\Exception\ClientException;
 use Nails\Elasticsearch\Factory\Search;
 use Nails\Elasticsearch\Interfaces\Index;
+use Nails\Elasticsearch\Interfaces\Ingest\Pipeline;
 use Nails\Elasticsearch\Traits\Log;
 use Nails\Factory;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -123,7 +124,7 @@ class Client
      *
      * @return $this
      */
-    public function destroy(OutputInterface $oOutput = null, array $aIndexes = null): self
+    public function destroy(OutputInterface $oOutput = null, array $aIndexes = null, array $aPipelines = null): self
     {
         if (!$this->isAvailable()) {
             $this->logln($oOutput, 'Elasticsearch is not available');
@@ -132,20 +133,20 @@ class Client
             );
         }
 
-        $aIndexes = $aIndexes ?? $this->discoverIndexes();
-        if (empty($aIndexes)) {
-            $this->logln($oOutput, 'No indexes to destroy');
+        $aIndexes   = $aIndexes ?? $this->discoverIndexes();
+        $aPipelines = $aPipelines ?? $this->discoverIngestPipelines();
+
+        if (empty($aIndexes) && empty($aPipelines)) {
+            $this->logln($oOutput, 'Nothing to destroy');
             return $this;
         }
 
         foreach ($aIndexes as $oIndex) {
             try {
 
-                $sIndexString = $this->formatIndexAsString($oIndex);
-
                 $this->log($oOutput, sprintf(
-                    'Destroying %s... ',
-                    $sIndexString
+                    'Destroying index %s... ',
+                    $this->formatIndexAsString($oIndex)
                 ));
 
                 $this
@@ -166,6 +167,26 @@ class Client
                         )
                     );
                 }
+
+            } finally {
+                $this->logln($oOutput, '<info>done</info>');
+            }
+        }
+
+        foreach ($aPipelines as $oPipeline) {
+            try {
+
+                $this->log($oOutput, sprintf(
+                    'Destroying ingest pipeline %s... ',
+                    $this->formatIngestPipelineAsString($oPipeline)
+                ));
+
+                $this
+                    ->getClient()
+                    ->ingest()
+                    ->deletePipeline([
+                        'id' => $oPipeline::getId(),
+                    ]);
 
             } finally {
                 $this->logln($oOutput, '<info>done</info>');
@@ -193,20 +214,23 @@ class Client
             );
         }
 
-        $aIndexes = $this->discoverIndexes();
-        if (empty($aIndexes)) {
-            $this->logln($oOutput, 'No indexes to reset');
+        $aIndexes   = $this->discoverIndexes();
+        $aPipelines = $this->discoverIngestPipelines();
+
+        if (empty($aIndexes) && empty($aPipelines)) {
+            $this->logln($oOutput, 'Nothing to reset');
             return $this;
         }
 
+        $this->destroy($oOutput, $aIndexes, $aPipelines);
+
         foreach ($aIndexes as $oIndex) {
-
-            $sIndexString = $this->formatIndexAsString($oIndex);
-            $this->destroy($oOutput, [$oIndex]);
-
             try {
 
-                $this->log($oOutput, sprintf('Creating %s... ', $sIndexString));
+                $this->log($oOutput, sprintf(
+                    'Creating %s... ',
+                    $this->formatIndexAsString($oIndex)
+                ));
 
                 $this
                     ->getClient()
@@ -227,6 +251,30 @@ class Client
                     'Failed to create index',
                     json_decode($e->getMessage())
                 );
+            }
+        }
+
+        foreach ($aPipelines as $oPipeline) {
+            try {
+
+                $this->log($oOutput, sprintf(
+                    'Creating ingest pipeline %s... ',
+                    $this->formatIngestPipelineAsString($oPipeline)
+                ));
+
+                $response = $this
+                    ->getClient()
+                    ->ingest()
+                    ->putPipeline([
+                        'id'   => $oPipeline::getId(),
+                        'body' => [
+                            'description' => $oPipeline::getDescription(),
+                            'processors'  => $oPipeline::getProcessors(),
+                        ],
+                    ]);
+
+            } finally {
+                $this->logln($oOutput, '<info>done</info>');
             }
         }
 
@@ -369,6 +417,29 @@ class Client
     // --------------------------------------------------------------------------
 
     /**
+     * Discovered Elasticsearch ingest pipeline definitions
+     *
+     * @return Pipeline[]
+     */
+    public function discoverIngestPipelines(): array
+    {
+        $aPipelines = [];
+        foreach (Components::available() as $oComponent) {
+            $oCollection = $oComponent
+                ->findClasses('Elasticsearch\\Ingest\\Pipeline')
+                ->whichImplement(Pipeline::class);
+
+            foreach ($oCollection as $sClass) {
+                $aPipelines[] = new $sClass();
+            }
+        }
+
+        return $aPipelines;
+    }
+
+    // --------------------------------------------------------------------------
+
+    /**
      * Logs an Elasticsearch error response
      *
      * @param OutputInterface $oOutput   The output interface to log to
@@ -407,6 +478,24 @@ class Client
             '<comment>%s</comment> [<comment>%s</comment>]',
             $oIndex->getIndex(),
             get_class($oIndex)
+        );
+    }
+
+    // --------------------------------------------------------------------------
+
+    /**
+     * Formats an ingest pipeline as a string for logging
+     *
+     * @param Pipeline $oPipeline The pipeline to format
+     *
+     * @return string
+     */
+    protected function formatIngestPipelineAsString(Pipeline $oPipeline): string
+    {
+        return sprintf(
+            '<comment>%s</comment> [<comment>%s</comment>]',
+            $oPipeline::getId(),
+            get_class($oPipeline)
         );
     }
 }
