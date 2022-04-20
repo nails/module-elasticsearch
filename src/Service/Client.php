@@ -340,15 +340,15 @@ class Client
      *
      * @return $this
      */
-    public function index(Index $oIndex, $mId, $mBody): self
+    public function index(Index $oIndex, $mId, $mBody, array $aIndexData = []): self
     {
         $this
             ->getClient()
             ->index([
-                'id'    => $mId,
-                'index' => $oIndex->getIndex(),
-                'body'  => $mBody,
-            ]);
+                    'id'    => $mId,
+                    'index' => $oIndex->getIndex(),
+                    'body'  => $mBody,
+                ] + $aIndexData);
 
         return $this;
     }
@@ -363,14 +363,14 @@ class Client
      *
      * @return $this
      */
-    public function delete(Index $oIndex, $mId): self
+    public function delete(Index $oIndex, $mId, array $aIndexData = []): self
     {
         $this
             ->getClient()
             ->delete([
-                'id'    => $mId,
-                'index' => $oIndex->getIndex(),
-            ]);
+                    'id'    => $mId,
+                    'index' => $oIndex->getIndex(),
+                ] + $aIndexData);
 
         return $this;
     }
