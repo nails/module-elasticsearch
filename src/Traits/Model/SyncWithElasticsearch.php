@@ -14,11 +14,12 @@ namespace Nails\Elasticsearch\Traits\Model;
 
 use Nails\Common\Exception\FactoryException;
 use Nails\Common\Exception\ModelException;
+use Nails\Common\Helper\Model\Where;
 use Nails\Common\Model\Base;
-use Nails\Common\Resource;
 use Nails\Common\Service\Database;
 use Nails\Elasticsearch\Constants;
 use Nails\Elasticsearch\Exception\ElasticsearchException;
+use Nails\Elasticsearch\Helper\CascadeDelete;
 use Nails\Elasticsearch\Interfaces\Index;
 use Nails\Elasticsearch\Service\Client;
 use Nails\Elasticsearch\Traits;
@@ -54,15 +55,12 @@ trait SyncWithElasticsearch
     // --------------------------------------------------------------------------
 
     /**
-     * Provides a hook to alter the data before it is indexed
-     *
-     * @param Resource $oItem The item being indexed
-     *
-     * @return void
+     * Returns an array of
+     * @return CascadeDelete[]
      */
-    protected function beforeIndex(Resource $oItem): void
+    protected function syncCascadeDelete(): array
     {
-
+        return [];
     }
 
     // --------------------------------------------------------------------------
@@ -103,9 +101,18 @@ trait SyncWithElasticsearch
                     $this->syncWithIndex(),
                     $iId
                 );
+
+            foreach ($this->syncCascadeDelete() as $oCascade) {
+                $oCascade
+                    ->getModel()
+                    ->skipDeleteExistsCheck()
+                    ->deleteWhere([
+                        new Where($oCascade->getColumn(), $iId),
+                    ]);
+            }
+
         } else {
             $oItem = $this->getById($iId, $this->syncToElasticsearchData());
-            $this->beforeIndex($oItem);
             $oClient
                 ->index(
                     $this->syncWithIndex(),
