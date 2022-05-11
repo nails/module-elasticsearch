@@ -56,6 +56,7 @@ trait SyncWithElasticsearch
 
     /**
      * Returns an array of
+     *
      * @return CascadeDelete[]
      */
     protected function syncCascadeDelete(): array
@@ -103,22 +104,29 @@ trait SyncWithElasticsearch
                 );
 
             foreach ($this->syncCascadeDelete() as $oCascade) {
+
+                $aIds = $oCascade
+                    ->getModel()
+                    ->getIds([
+                        new Where($oCascade->getColumn(), $iId),
+                    ]);
+
                 $oCascade
                     ->getModel()
                     ->skipDeleteExistsCheck()
-                    ->deleteWhere([
-                        new Where($oCascade->getColumn(), $iId),
-                    ]);
+                    ->deleteMany($aIds);
             }
 
         } else {
             $oItem = $this->getById($iId, $this->syncToElasticsearchData());
-            $oClient
-                ->index(
-                    $this->syncWithIndex(),
-                    $oItem->id,
-                    $oItem
-                );
+            if (!empty($oItem)) {
+                $oClient
+                    ->index(
+                        $this->syncWithIndex(),
+                        $oItem->id,
+                        $oItem
+                    );
+            }
         }
     }
 
