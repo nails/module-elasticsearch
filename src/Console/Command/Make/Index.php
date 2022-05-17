@@ -12,6 +12,7 @@
 
 namespace Nails\Elasticsearch\Console\Command\Make;
 
+use Nails\Common\Helper\Strings;
 use Nails\Console\Command\Base;
 use Nails\Console\Exception\ConsoleException;
 use Nails\Console\Exception\Path\DoesNotExistException;
@@ -123,6 +124,8 @@ class Index extends Base
         $aIndexes = array_unique(
             array_map(
                 function ($sIndex) {
+
+                    $sIndex = Strings::dashToCamelCase($sIndex);
                     $sIndex = str_replace('/', '\\', $sIndex);
                     $sIndex = preg_replace('/[^a-zA-Z0-9\\\]/', '', $sIndex);
                     $aIndex = explode('\\', $sIndex);
@@ -159,7 +162,7 @@ class Index extends Base
                 'NAMESPACE'       => $sNamespace,
                 'CLASS_NAME'      => $sClassName,
                 'CLASS_NAME_FULL' => $sNamespace . '\\' . $sClassName,
-                'INDEX'           => str_replace('\\', '-', strtolower($sClass)),
+                'INDEX'           => Strings::camelcase_to_dash(str_replace('\\', '-', $sClass)),
                 'PATH'            => NAILS_APP_PATH . 'src/Elasticsearch/Index/' . str_replace('\\', '/', $sClass) . '.php',
             ];
         }
