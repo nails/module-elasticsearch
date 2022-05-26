@@ -188,6 +188,18 @@ class Client
                         'id' => $oPipeline::getId(),
                     ]);
 
+            } catch (ClientResponseException $e) {
+                //  Tolerate deletion of non-existing pipeline - amounts to the same thing
+                if ($e->getCode() !== HttpCodes::STATUS_NOT_FOUND) {
+                    $this->logEsError(
+                        $oOutput,
+                        'Failed to delete ingest pipeline',
+                        json_decode(
+                            (string) $e->getResponse()->getBody()
+                        )
+                    );
+                }
+
             } finally {
                 $this->logln($oOutput, '<info>done</info>');
             }
