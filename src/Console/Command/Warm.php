@@ -39,7 +39,9 @@ class Warm extends Base
         $this
             ->setName('elasticsearch:warm')
             ->setDescription('Warms defined indexes in Elasticsearch')
-            ->addOption('index', 'i', InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED, 'Define specific index to warm');
+            ->addOption('index', 'i', InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED, 'Define specific index to warm')
+            ->addOption('limit', 'l', InputOption::VALUE_REQUIRED, 'Maximum number of items to index')
+            ->addOption('offset', 'o', InputOption::VALUE_REQUIRED, 'Start indexing from offset');
     }
 
     // --------------------------------------------------------------------------
@@ -60,7 +62,10 @@ class Warm extends Base
 
         // --------------------------------------------------------------------------
 
+        $iOffset  = ((int) $oInput->getOption('offset')) ?: null;
+        $iLimit   = ((int) $oInput->getOption('limit')) ?: null;
         $aIndexes = $oInput->getOption('index') ?: null;
+
         if (!empty($aIndexes)) {
             $aIndexes = array_map(function (string $sClass) {
                 if (!class_exists($sClass) || !classImplements($sClass, Index::class)) {
@@ -80,7 +85,7 @@ class Warm extends Base
 
         /** @var Client $oClient */
         $oClient = Factory::service('Client', Constants::MODULE_SLUG);
-        $oClient->warm($aIndexes, $oOutput);
+        $oClient->warm($aIndexes, $iOffset, $iLimit, $oOutput);
 
         // --------------------------------------------------------------------------
 

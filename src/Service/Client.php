@@ -299,11 +299,13 @@ class Client
      * Warms all defined indexes in Elasticsearch
      *
      * @param Index[]|null         $aIndexes An array of indexes to warm
+     * @param int|null             $iOffset  Start indexing from offset (useful for testing)
+     * @param int|null             $iLimit   Maximum number of items to index (useful for testing)
      * @param OutputInterface|null $oOutput  An output interface to log to
      *
      * @return $this
      */
-    public function warm(array $aIndexes = null, OutputInterface $oOutput = null): self
+    public function warm(array $aIndexes = null, int $iOffset = null, int $iLimit = null, OutputInterface $oOutput = null): self
     {
         if (!$this->isAvailable()) {
             $this->logln($oOutput, 'Elasticsearch is not available');
@@ -335,7 +337,7 @@ class Client
             );
             $this->logln($oOutput);
 
-            $oIndex->warm($this, $oOutput);
+            $oIndex->warm($this, $oOutput, $iOffset, $iLimit);
 
             $this->logln($oOutput);
         }

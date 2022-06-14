@@ -46,10 +46,12 @@ trait Warm
      *
      * @param Client          $oClient The Elasticsearch client
      * @param OutputInterface $oOutput The output interface being used
+     * @param int|null        $iOffset Start indexing from offset (useful for testing)
+     * @param int|null        $iLimit  Maximum number of items to index (useful for testing)
      *
      * @return $this
      */
-    public function warm(Client $oClient, OutputInterface $oOutput)
+    public function warm(Client $oClient, OutputInterface $oOutput, int $iOffset = null, int $iLimit = null)
     {
         /** @var Database $oDb */
         $oDb = Factory::service('Database');
@@ -73,8 +75,17 @@ trait Warm
             ],
         ]);
 
-        while ($oItem = $oItems->unbuffered_row()) {
+        $iOffset       = $iOffset ?? 0;
+        $iLimit        = $iLimit ?? INF;
+        $iRowNumber    = 0;
+        $iNumProcessed = 0;
+
+        while (($oItem = $oItems->unbuffered_row()) && $iNumProcessed < $iLimit) {
             try {
+
+                if ($iRowNumber < $iOffset) {
+                    continue;
+                }
 
                 $this->log(
                     $oOutput,
@@ -86,6 +97,7 @@ trait Warm
 
                 $oModel->syncToElasticsearch($oItem->id, null);
                 $this->logln($oOutput, '<info>done</info>');
+                $iNumProcessed++;
 
             } catch (\Exception $e) {
 
@@ -110,6 +122,7 @@ trait Warm
 
             } finally {
                 $oDb->flushCache();
+                $iRowNumber++;
             }
         }
 
