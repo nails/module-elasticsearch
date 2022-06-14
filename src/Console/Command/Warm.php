@@ -14,8 +14,10 @@ namespace Nails\Elasticsearch\Console\Command;
 
 use Nails\Console\Command\Base;
 use Nails\Elasticsearch\Constants;
+use Nails\Elasticsearch\Interfaces\Index;
 use Nails\Elasticsearch\Service\Client;
 use Nails\Factory;
+use Symfony\Component\Console\Exception\InvalidOptionException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -36,7 +38,8 @@ class Warm extends Base
     {
         $this
             ->setName('elasticsearch:warm')
-            ->setDescription('Warms defined indexes in Elasticsearch');
+            ->setDescription('Warms defined indexes in Elasticsearch')
+            ->addOption('index', 'i', InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED, 'Define specific index to warm');
     }
 
     // --------------------------------------------------------------------------
@@ -57,9 +60,27 @@ class Warm extends Base
 
         // --------------------------------------------------------------------------
 
+        $aIndexes = $oInput->getOption('index') ?: null;
+        if (!empty($aIndexes)) {
+            $aIndexes = array_map(function (string $sClass) {
+                if (!class_exists($sClass) || !classImplements($sClass, Index::class)) {
+                    throw new InvalidOptionException(
+                        sprintf(
+                            '"%s" is not a valid Index',
+                            $sClass
+                        )
+                    );
+                }
+
+                return new $sClass();
+            }, $aIndexes);
+        }
+
+        // --------------------------------------------------------------------------
+
         /** @var Client $oClient */
         $oClient = Factory::service('Client', Constants::MODULE_SLUG);
-        $oClient->warm($oOutput);
+        $oClient->warm($aIndexes, $oOutput);
 
         // --------------------------------------------------------------------------
 

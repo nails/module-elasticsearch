@@ -298,11 +298,12 @@ class Client
     /**
      * Warms all defined indexes in Elasticsearch
      *
-     * @param OutputInterface|null $oOutput An output interface to log to
+     * @param Index[]|null         $aIndexes An array of indexes to warm
+     * @param OutputInterface|null $oOutput  An output interface to log to
      *
      * @return $this
      */
-    public function warm(OutputInterface $oOutput = null): self
+    public function warm(array $aIndexes = null, OutputInterface $oOutput = null): self
     {
         if (!$this->isAvailable()) {
             $this->logln($oOutput, 'Elasticsearch is not available');
@@ -311,12 +312,13 @@ class Client
             );
         }
 
-        $aIndexes = $this->discoverIndexes();
+        $aIndexes = $aIndexes ?? $this->discoverIndexes();
         if (empty($aIndexes)) {
             $this->logln($oOutput, 'No indexes to warm');
             return $this;
         }
 
+        /** @var Index $oIndex */
         foreach ($aIndexes as $oIndex) {
 
             $sTitle = sprintf(
