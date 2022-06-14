@@ -69,7 +69,7 @@ trait Warm
         // Select only `id` to avoid flooding memory on large tables
         $oItems = $oModel->getAllRawQuery([
             'select' => [
-                $oModel->getColumn('id'),
+                $oModel->getTableAlias(true) . $oModel->getColumn('id'),
             ],
         ]);
 
