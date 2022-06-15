@@ -38,7 +38,17 @@ trait SyncWithElasticsearch
      *
      * @return Index
      */
-    abstract function syncWithIndex(): Index;
+    abstract public function syncWithIndex(): Index;
+
+    /**
+     * Enforce the `skipCache` method
+     */
+    abstract public function skipCache(): Base;
+
+    /**
+     * Enforce the `getById` method
+     */
+    abstract public function getById($iId, array $aData = []);
 
     // --------------------------------------------------------------------------
 
