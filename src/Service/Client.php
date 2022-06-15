@@ -339,7 +339,7 @@ class Client
 
             $oIndex->warm($this, $oOutput, $iOffset, $iLimit);
 
-            $this->logln($oOutput);
+            $this->logln($oOutput, '');
         }
 
         return $this;
