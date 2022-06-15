@@ -16,10 +16,12 @@ use Nails\Common\Exception\FactoryException;
 use Nails\Common\Exception\ModelException;
 use Nails\Common\Helper\Model\Where;
 use Nails\Common\Model\Base;
+use Nails\Common\Resource;
 use Nails\Common\Service\Database;
 use Nails\Elasticsearch\Constants;
 use Nails\Elasticsearch\Exception\ElasticsearchException;
 use Nails\Elasticsearch\Helper\CascadeDelete;
+use Nails\Elasticsearch\Helper\CascadeIndex;
 use Nails\Elasticsearch\Interfaces\Index;
 use Nails\Elasticsearch\Service\Client;
 use Nails\Elasticsearch\Traits;
@@ -65,11 +67,23 @@ trait SyncWithElasticsearch
     // --------------------------------------------------------------------------
 
     /**
-     * Returns an array of
+     * Returns an array of items which should be deleted when an item is deleted
      *
      * @return CascadeDelete[]
      */
     protected function syncCascadeDelete(): array
+    {
+        return [];
+    }
+
+    // --------------------------------------------------------------------------
+
+    /**
+     * Returns an array of items which should be re-indexed when an item is indexed
+     *
+     * @return CascadeIndex[]
+     */
+    protected function syncCascadeIndex(): array
     {
         return [];
     }
@@ -100,44 +114,147 @@ trait SyncWithElasticsearch
      * @param string|null $sEvent The event which triggered the sync, if any
      *
      * @throws FactoryException
+     * @throws ModelException
      */
-    public function syncToElasticsearch(int $iId, ?string $sEvent)
+    public function syncToElasticsearch(int $iId, string $sEvent = null): void
+    {
+        if ($sEvent === static::EVENT_DELETED) {
+
+            $this
+                ->deleteItemFromElasticsearch($iId)
+                ->deleteItemFromElasticsearchCascade($iId);
+
+        } else {
+
+            $this
+                ->indexItemToElasticsearch($iId)
+                ->indexItemToElasticsearchCascade($iId);
+        }
+    }
+
+    // --------------------------------------------------------------------------
+
+    /**
+     * Deletes the item from Elasticsearch
+     *
+     * @param int $iId The ID of the object being deleted
+     *
+     * @return $this
+     * @throws FactoryException
+     * @throws ModelException
+     */
+    protected function deleteItemFromElasticsearch(int $iId): self
     {
         /** @var Client $oClient */
         $oClient = Factory::service('Client', Constants::MODULE_SLUG);
 
-        if ($sEvent === static::EVENT_DELETED) {
+        $oClient
+            ->delete(
+                $this->syncWithIndex(),
+                $iId
+            );
+
+        return $this;
+    }
+
+    // --------------------------------------------------------------------------
+
+    /**
+     * Performs any cascading deletions
+     *
+     * @param int $iId The ID of the object being deleted
+     *
+     * @return $this
+     * @throws FactoryException
+     * @throws \Nails\Common\Exception\ModelException
+     */
+    protected function deleteItemFromElasticsearchCascade(int $iId): self
+    {
+        foreach ($this->syncCascadeDelete() as $oCascade) {
+
+            $oModel = $oCascade->getModel();
+
+            $aIds = $oModel
+                ->skipCache()
+                ->getIds([
+                    new Where($oCascade->getColumn(), $iId),
+                ]);
+
+            $oModels
+                ->skipDeleteExistsCheck()
+                ->deleteMany($aIds);
+        }
+
+        return $this;
+    }
+
+    // --------------------------------------------------------------------------
+
+    /**
+     * Returns the item to index to Elasticsearch
+     *
+     * @param int $iId The ID of the object being indexed
+     *
+     * @return Resource
+     * @throws ModelException
+     */
+    protected function getItemToIndexToElasticsearch(int $iId): Resource
+    {
+        return $this
+            ->skipCache()
+            ->getById($iId, $this->syncToElasticsearchData());
+    }
+
+    // --------------------------------------------------------------------------
+
+    /**
+     * Indexes as resource to Elasticsearch
+     *
+     * @param \Nails\Common\Resource $oItem The item to index
+     *
+     * @return $this
+     * @throws FactoryException
+     */
+    protected function indexItemToElasticsearch(int $iId): self
+    {
+        /** @var Client $oClient */
+        $oClient = Factory::service('Client', Constants::MODULE_SLUG);
+
+        $oItem = $this->getItemToIndexToElasticsearch($iId);
+
+        if (!empty($oItem)) {
             $oClient
-                ->delete(
+                ->index(
                     $this->syncWithIndex(),
-                    $iId
+                    $oItem->id,
+                    $oItem
                 );
+        }
 
-            foreach ($this->syncCascadeDelete() as $oCascade) {
+        return $this;
+    }
 
-                $aIds = $oCascade
-                    ->getModel()
-                    ->getIds([
-                        new Where($oCascade->getColumn(), $iId),
-                    ]);
+    // --------------------------------------------------------------------------
 
-                $oCascade
-                    ->getModel()
-                    ->skipDeleteExistsCheck()
-                    ->deleteMany($aIds);
-            }
+    protected function indexItemToElasticsearchCascade(int $iId): self
+    {
+        foreach ($this->syncCascadeIndex() as $oCascade) {
 
-        } else {
-            $oItem = $this->getById($iId, $this->syncToElasticsearchData());
-            if (!empty($oItem)) {
-                $oClient
-                    ->index(
-                        $this->syncWithIndex(),
-                        $oItem->id,
-                        $oItem
-                    );
+            $oModel = $oCascade->getModel();
+
+            $aIds = $oModel
+                ->skipCache()
+                ->getIds([
+                    new Where($oCascade->getColumn(), $iId),
+                ]);
+
+            foreach ($aIds as $iId) {
+                $oModel
+                    ->indexItemToElasticsearch($iId);
             }
         }
+
+        return $this;
     }
 
     // --------------------------------------------------------------------------
