@@ -202,6 +202,7 @@ trait SyncWithElasticsearch
     {
         return $this
             ->skipCache()
+            ->includeDeleted()
             ->getById($iId, $this->syncToElasticsearchData());
     }
 
