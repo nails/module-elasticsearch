@@ -195,10 +195,10 @@ trait SyncWithElasticsearch
      *
      * @param int $iId The ID of the object being indexed
      *
-     * @return Resource
+     * @return Resource|null
      * @throws ModelException
      */
-    protected function getItemToIndexToElasticsearch(int $iId): Resource
+    protected function getItemToIndexToElasticsearch(int $iId): ?Resource
     {
         return $this
             ->skipCache()
