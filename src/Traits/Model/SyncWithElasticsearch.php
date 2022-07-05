@@ -180,7 +180,7 @@ trait SyncWithElasticsearch
                     new Where($oCascade->getColumn(), $iId),
                 ]);
 
-            $oModels
+            $oModel
                 ->skipDeleteExistsCheck()
                 ->deleteMany($aIds);
         }
