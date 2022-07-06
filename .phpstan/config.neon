@@ -7,3 +7,4 @@ parameters:
         - constants.php
     scanFiles:
         - ../vendor/nails/module-auth/helpers/user.php
+        - ../vendor/nails/common/helpers/tools.php
