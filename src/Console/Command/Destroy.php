@@ -18,7 +18,6 @@ use Nails\Elasticsearch\Service\Client;
 use Nails\Environment;
 use Nails\Factory;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -49,6 +48,8 @@ class Destroy extends Base
      * @param OutputInterface $oOutput The Output Interface provided by Symfony
      *
      * @return int
+     * @throws \Nails\Common\Exception\FactoryException
+     * @throws \Nails\Elasticsearch\Exception\ClientException
      */
     protected function execute(InputInterface $oInput, OutputInterface $oOutput): int
     {
