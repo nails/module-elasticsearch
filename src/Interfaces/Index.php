@@ -51,6 +51,15 @@ interface Index
     // --------------------------------------------------------------------------
 
     /**
+     * Returns the index's priority, used to influence warm order
+     *
+     * @return int
+     */
+    public static function getPriority(): int;
+
+    // --------------------------------------------------------------------------
+
+    /**
      * Warms the index
      *
      * @param Client          $oClient The Elasticsearch client

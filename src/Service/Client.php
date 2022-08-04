@@ -314,7 +314,7 @@ class Client
             );
         }
 
-        $aIndexes = $aIndexes ?? $this->discoverIndexes();
+        $aIndexes = $aIndexes ?? $this->sortIndexesByPriority($this->discoverIndexes());
         if (empty($aIndexes)) {
             $this->logln($oOutput, 'No indexes to warm');
             return $this;
@@ -427,6 +427,24 @@ class Client
             }
         }
 
+        return $aIndexes;
+    }
+
+    // --------------------------------------------------------------------------
+
+    /**
+     * Sorts indexes by priority
+     *
+     * @param array $aIndexes
+     *
+     * @return array
+     */
+    public function sortIndexesByPriority(array $aIndexes): array
+    {
+        usort(
+            $aIndexes,
+            fn(Index $a, Index $b) => $a::getPriority() <=> $b::getPriority()
+        );
         return $aIndexes;
     }
 
