@@ -1,10 +1,10 @@
 class Stats {
 
     constructor() {
-        if ($('.group-elasticsearch.stats').length) {
+        if (document.getElementById('js-elasticsearch-stats')) {
             this.loadStats();
-            $('.js-action-reload-stats')
-                .on('click', () => {
+            document.getElementById('js-elasticsearch-stats-reload')
+                .addEventListener('click', () => {
                     this.loadStats();
                 });
         }
@@ -14,13 +14,19 @@ class Stats {
 
     loadStats() {
 
-        $('#js-stats-loading').removeClass('hidden');
-        $('#js-stats-loaded').addClass('hidden');
+        console.log('loading stats');
+
+        let loading = document.getElementById('js-elasticsearch-stats-loading');
+        let loaded = document.getElementById('js-elasticsearch-stats-loaded');
+
+        loading.classList.remove('hidden');
+        loaded.classList.add('hidden');
 
         $.get(window.SITE_URL + 'api/elasticsearch/stats')
             .done((data) => {
-                $('#js-stats-loading').addClass('hidden');
-                $('#js-stats-loaded').removeClass('hidden');
+
+                loading.classList.add('hidden');
+                loaded.classList.remove('hidden');
                 this.processStats(data.data);
             })
             .fail((response) => {
@@ -34,57 +40,69 @@ class Stats {
                     };
                 }
 
-                $('#js-stats-loading')
-                    .attr('class', 'alert alert-danger')
-                    .html(data.error);
+                loading.className = 'alert alert-danger';
+                laoding.innerHTML = data.error;
             });
     }
 
     // --------------------------------------------------------------------------
 
-    processStats(statData) {
+    processStats(data) {
 
+        console.log(data);
         //  Cluster health
         let alertClass = 'warning';
         let alertIcon = 'warning';
         let alertMsg = 'The health of the cluster is unknown.';
 
-        switch (statData.status) {
+        switch (data.cluster.status) {
             case 'green':
                 alertClass = 'success';
                 alertIcon = 'check';
-                alertMsg = '[' + statData.cluster_name + '] Cluster is fully functional.';
+                alertMsg = '[' + data.cluster.name + '] Cluster is fully functional.';
                 break;
 
             case 'yellow':
                 alertClass = 'warning';
                 alertIcon = 'exclamation-triangle';
-                alertMsg = '[' + statData.cluster_name + '] Cluster is fully functional but some data has not yet been replicated.';
+                alertMsg = '[' + data.cluster.name + '] Cluster is fully functional but some data has not yet been replicated.';
                 break;
 
             case 'red':
                 alertClass = 'warning';
                 alertIcon = 'exclamation-triangle';
-                alertMsg = '[' + statData.cluster_name + '] Cluster is missing data.';
+                alertMsg = '[' + data.cluster.name + '] Cluster is missing data.';
                 break;
         }
 
-        $('#js-cluster-health').attr('class', 'alert alert-' + alertClass);
-        $('#js-cluster-health .fa').attr('class', 'fa fa-lg fa-' + alertIcon);
-        $('#js-cluster-health .msg').html(alertMsg);
+        let clusterHealth = document.getElementById('js-elasticsearch-stats-cluster-health');
+        let clusterIcon = clusterHealth.querySelector('.fa');
+        let clusterMsg = clusterHealth.querySelector('.msg');
+
+        clusterHealth.className = `alert alert-${alertClass}`;
+        clusterIcon.className = `fa fa-lg fa-${alertIcon}`;
+        clusterMsg.innerHTML = alertMsg;
 
         // --------------------------------------------------------------------------
 
-        //  Indices
-        $('.js-stat-indices-count').html(statData.indices.count);
-        $('.js-stat-indices-docs-count').html(statData.indices.docs.count);
-        $('.js-stat-indices-segments-count').html(statData.indices.segments.count);
+        // Details
+        let target = document.getElementById('js-elasticsearch-stats-details');
+        target.innerHTML = '';
 
-        //  Nodes
-        //  Counts
-        for (let key in statData.nodes.count) {
-            if (statData.nodes.count.hasOwnProperty(key)) {
-                $('.js-stat-nodes-count-' + key).html(statData.nodes.count[key]);
+        for (let key in data.details) {
+            if (data.details.hasOwnProperty(key)) {
+
+                let row = document.createElement('tr');
+                let cellLabel = document.createElement('td');
+                let cellValue = document.createElement('td');
+
+                cellLabel.innerHTML = data.details[key].label;
+                cellValue.innerHTML = data.details[key].value;
+
+                row.append(cellLabel)
+                row.append(cellValue)
+
+                target.append(row);
             }
         }
     }

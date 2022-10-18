@@ -26,11 +26,11 @@ trait Log
      * Writes to the output interface, if available
      *
      * @param OutputInterface|null $oOutput   An output interface to log to
-     * @param string[]             ...$aLines Messages to log
+     * @param string|string[]      ...$aLines Messages to log
      *
      * @return $this
      */
-    protected function log(OutputInterface $oOutput = null, ...$aLines)
+    protected function log(OutputInterface $oOutput = null, ...$aLines): self
     {
         if ($oOutput !== null) {
             foreach ($aLines as $sLine) {
@@ -46,11 +46,11 @@ trait Log
      * Writes to the output interface, if available
      *
      * @param OutputInterface|null $oOutput   An output interface to log to
-     * @param string[]             ...$aLines Messages to log
+     * @param string|string[]             ...$aLines Messages to log
      *
      * @return $this
      */
-    protected function logln(OutputInterface $oOutput = null, ...$aLines)
+    protected function logln(OutputInterface $oOutput = null, ...$aLines): self
     {
         if ($oOutput !== null) {
             foreach ($aLines as $sLine) {

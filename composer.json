@@ -31,7 +31,8 @@
     },
     "require-dev": {
         "phpunit/phpunit": "9.*",
-        "phpstan/phpstan": "1.*"
+        "phpstan/phpstan": "1.*",
+        "nails/module-admin": "dev-develop"
     },
     "scripts": {
         "test": "./vendor/bin/phpunit",

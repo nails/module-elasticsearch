@@ -42,7 +42,7 @@ class Results
     /** @var float */
     public $max_score;
 
-    /** @var array */
+    /** @var \Nails\Elasticsearch\Factory\Search\Results\Hit[] */
     public $hits;
 
     // --------------------------------------------------------------------------

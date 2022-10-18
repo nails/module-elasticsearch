@@ -12,6 +12,7 @@
 namespace Nails\Elasticsearch\Api\Controller;
 
 use Nails\Api;
+use Nails\Elasticsearch\Admin\Permission;
 use Nails\Elasticsearch\Constants;
 use Nails\Elasticsearch\Service\Client;
 use Nails\Factory;
@@ -41,7 +42,7 @@ class Stats extends \Nails\Api\Controller\Base
     public static function isAuthenticated($sHttpMethod = '', $sMethod = '')
     {
         return parent::isAuthenticated($sHttpMethod, $sMethod)
-            && userHasPermission('admin:elasticsearch:elasticsearch:view');
+            && userHasPermission(Permission\Statistics\View::class);
     }
 
     // --------------------------------------------------------------------------
@@ -74,7 +75,46 @@ class Stats extends \Nails\Api\Controller\Base
             throw new Api\Exception\ApiException('Elasticsearch is not available.', 500);
         }
 
+        $oStats = json_decode(
+            $oClient
+                ->getClient()
+                ->cluster()
+                ->stats()
+                ->getBody()
+        );
+
         return Factory::factory('ApiResponse', Api\Constants::MODULE_SLUG)
-            ->setData($oClient->getClient()->cluster()->stats());
+            ->setData([
+                'cluster' => [
+                    'name'   => $oStats->cluster_name ?: $oStats->cluster_uuid,
+                    'status' => $oStats->status,
+                ],
+                'details' => [
+                    [
+                        'label' => 'Node Count',
+                        'value' => $oStats->nodes->count->total,
+                    ],
+                    [
+                        'label' => 'Index Count',
+                        'value' => $oStats->indices->count,
+                    ],
+                    [
+                        'label' => 'Index Size',
+                        'value' => formatBytes($oStats->indices->store->size_in_bytes),
+                    ],
+                    [
+                        'label' => 'Shard Count',
+                        'value' => $oStats->indices->shards->total,
+                    ],
+                    [
+                        'label' => 'Document Count',
+                        'value' => $oStats->indices->docs->count,
+                    ],
+                    [
+                        'label' => 'Segment Count',
+                        'value' => $oStats->indices->segments->count,
+                    ],
+                ],
+            ]);
     }
 }
