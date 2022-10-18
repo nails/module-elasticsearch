@@ -6,5 +6,8 @@ parameters:
     bootstrapFiles:
         - constants.php
     scanFiles:
-        - ../vendor/nails/module-auth/helpers/user.php
+        - ../vendor/nails/common/helpers/file.php
         - ../vendor/nails/common/helpers/tools.php
+        - ../vendor/nails/common/src/Common/CodeIgniter/Core/Common.php
+        - ../vendor/nails/module-admin/helpers/permission.php
+        - ../vendor/nails/module-auth/helpers/user.php

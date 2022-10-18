@@ -12,29 +12,31 @@
 
 namespace Nails\Elasticsearch\Admin\Controller;
 
-use Nails\Factory;
-use Nails\Admin\Helper;
+use \Nails\Admin\Factory\Nav;
 use Nails\Admin\Controller\Base;
+use Nails\Admin\Helper;
 use Nails\Elasticsearch\Admin\Permission;
+use Nails\Factory;
 
 class Statistics extends Base
 {
     /**
      * Announces this controller's navGroups
      *
-     * @return stdClass
+     * @return Nav|Nav[]
      */
     public static function announce()
     {
         if (userHasPermission(Permission\Statistics\View::class)) {
-            /** @var \Nails\Admin\Factory\Nav $oNavGroup */
+            /** @var Nav $oNavGroup */
             $oNavGroup = Factory::factory('Nav', \Nails\Admin\Constants::MODULE_SLUG);
             $oNavGroup
                 ->setLabel('Elasticsearch')
                 ->setIcon('fa-search')
                 ->addAction('Statistics');
-            return $oNavGroup;
         }
+
+        return $oNavGroup ?? null;
     }
 
     // --------------------------------------------------------------------------
