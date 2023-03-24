@@ -6,12 +6,16 @@ class Date implements \JsonSerializable
 {
     protected string $sFormat;
 
+    // --------------------------------------------------------------------------
+
     public function __construct(string $sFormat = null)
     {
         $this->sFormat = $sFormat ?? 'yyy-MM-dd HH:mm:ss';
     }
 
-    public function jsonSerialize()
+    // --------------------------------------------------------------------------
+
+    public function jsonSerialize(): object
     {
         return (object) [
             'type'   => 'date',
