@@ -12,12 +12,14 @@
 
 namespace Nails\Elasticsearch\Traits\Model;
 
+use Elastic\Elasticsearch\Exception\ClientResponseException;
 use Nails\Common\Exception\FactoryException;
 use Nails\Common\Exception\ModelException;
 use Nails\Common\Helper\Model\Where;
 use Nails\Common\Model\Base;
 use Nails\Common\Resource;
 use Nails\Common\Service\Database;
+use Nails\Common\Service\HttpCodes;
 use Nails\Elasticsearch\Constants;
 use Nails\Elasticsearch\Exception\ElasticsearchException;
 use Nails\Elasticsearch\Helper\CascadeDelete;
@@ -148,11 +150,20 @@ trait SyncWithElasticsearch
         /** @var Client $oClient */
         $oClient = Factory::service('Client', Constants::MODULE_SLUG);
 
-        $oClient
-            ->delete(
-                $this->syncWithIndex(),
-                $iId
-            );
+        try {
+
+            $oClient
+                ->delete(
+                    $this->syncWithIndex(),
+                    $iId
+                );
+
+        } catch (ClientResponseException $e) {
+            //  Tolerate 404's as the end result is the same
+            if ($e->getCode() !== HttpCodes::STATUS_NOT_FOUND) {
+                throw $e;
+            }
+        }
 
         return $this;
     }
