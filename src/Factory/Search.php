@@ -103,7 +103,7 @@ class Search
                 'body' => [
                     'query' => [
                         'query_string' => [
-                            'query' => $mQuery,
+                            'query' => $mQuery . '*',
                         ],
                     ],
                 ],
