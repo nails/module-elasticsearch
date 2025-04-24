@@ -18,7 +18,6 @@ use Nails\Common\Exception\ModelException;
 use Nails\Common\Helper\Model\Where;
 use Nails\Common\Model\Base;
 use Nails\Common\Resource;
-use Nails\Common\Service\Database;
 use Nails\Common\Service\HttpCodes;
 use Nails\Elasticsearch\Constants;
 use Nails\Elasticsearch\Exception\ElasticsearchException;
@@ -26,9 +25,7 @@ use Nails\Elasticsearch\Helper\CascadeDelete;
 use Nails\Elasticsearch\Helper\CascadeIndex;
 use Nails\Elasticsearch\Interfaces\Index;
 use Nails\Elasticsearch\Service\Client;
-use Nails\Elasticsearch\Traits;
 use Nails\Factory;
-use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Trait Warm
