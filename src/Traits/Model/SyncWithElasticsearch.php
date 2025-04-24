@@ -57,6 +57,19 @@ trait SyncWithElasticsearch
     // --------------------------------------------------------------------------
 
     /**
+     * Provides a hook to alter the data before it is indexed
+     *
+     * @param Resource $oItem The item being indexed
+     *
+     * @return void
+     */
+    protected function beforeIndexItemToElasticsearch(Resource $oItem): void
+    {
+    }
+
+    // --------------------------------------------------------------------------
+
+    /**
      * Returns a control array to use when saving the item to Elasticsearch
      *
      * @return array
@@ -234,6 +247,7 @@ trait SyncWithElasticsearch
         $oItem = $this->getItemToIndexToElasticsearch($iId);
 
         if (!empty($oItem)) {
+            $this->beforeIndexItemToElasticsearch($oItem);
             $oClient
                 ->index(
                     $this->syncWithIndex(),
