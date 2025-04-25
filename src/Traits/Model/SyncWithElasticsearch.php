@@ -140,7 +140,7 @@ trait SyncWithElasticsearch
 
             $this
                 ->indexItemToElasticsearch($iId)
-                ->indexItemToElasticsearchCascade($iId);
+                ->indexItemToElasticsearchCascade($iId, $sEvent);
         }
     }
 
@@ -258,7 +258,7 @@ trait SyncWithElasticsearch
 
     // --------------------------------------------------------------------------
 
-    protected function indexItemToElasticsearchCascade(int $iId): self
+    protected function indexItemToElasticsearchCascade(int $iId, string $sEvent = null): self
     {
         foreach ($this->syncCascadeIndex() as $oCascade) {
 
@@ -272,7 +272,7 @@ trait SyncWithElasticsearch
 
             foreach ($aIds as $iId) {
                 $oModel
-                    ->indexItemToElasticsearch($iId);
+                    ->syncToElasticsearch($iId, $sEvent);
             }
         }
 
