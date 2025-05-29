@@ -174,7 +174,7 @@ class Search
      * @return $this
      * @throws ClientException
      */
-    public function setIndexes(array $aIndexes = null): self
+    public function setIndexes(?array $aIndexes = null): self
     {
         if ($aIndexes !== null) {
 
@@ -209,7 +209,7 @@ class Search
      *
      * @return Results
      */
-    public function execute(int $iSize = null, int $iPage = 0): Results
+    public function execute(?int $iSize = null, int $iPage = 0): Results
     {
         $iSize = $iSize ?? static::DEFAULT_SIZE;
         $iPage = $iPage < 0 ? 0 : $iPage;

@@ -8,7 +8,7 @@ class Date implements \JsonSerializable
 
     // --------------------------------------------------------------------------
 
-    public function __construct(string $sFormat = null)
+    public function __construct(?string $sFormat = null)
     {
         $this->sFormat = $sFormat ?? 'yyy-MM-dd HH:mm:ss';
     }

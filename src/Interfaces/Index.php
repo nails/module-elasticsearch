@@ -69,5 +69,5 @@ interface Index
      *
      * @return $this
      */
-    public function warm(Client $oClient, OutputInterface $oOutput, int $iOffset = null, int $iLimit = null);
+    public function warm(Client $oClient, OutputInterface $oOutput, ?int $iOffset = null, ?int $iLimit = null);
 }
