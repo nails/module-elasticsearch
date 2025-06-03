@@ -74,7 +74,7 @@ class {{CLASS_NAME}} implements Elasticsearch\Interfaces\Index
      *
      * @return $this
      */
-    public function warm(Elasticsearch\Service\Client $oClient, OutputInterface $oOutput, int $iOffset = null, int $iLimit = null)
+    public function warm(Elasticsearch\Service\Client $oClient, OutputInterface $oOutput, ?int $iOffset = null, ?int $iLimit = null)
     {
         //  @todo  - Define index warming behaviour
         return $this;
