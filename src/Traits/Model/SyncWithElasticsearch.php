@@ -128,7 +128,7 @@ trait SyncWithElasticsearch
      * @throws FactoryException
      * @throws ModelException
      */
-    public function syncToElasticsearch(int $iId, string $sEvent = null): void
+    public function syncToElasticsearch(int $iId, ?string $sEvent = null): void
     {
         if ($sEvent === static::EVENT_DELETED) {
 
@@ -258,7 +258,7 @@ trait SyncWithElasticsearch
 
     // --------------------------------------------------------------------------
 
-    protected function indexItemToElasticsearchCascade(int $iId, string $sEvent = null): self
+    protected function indexItemToElasticsearchCascade(int $iId, ?string $sEvent = null): self
     {
         foreach ($this->syncCascadeIndex() as $oCascade) {
 

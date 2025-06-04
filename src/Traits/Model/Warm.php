@@ -51,7 +51,7 @@ trait Warm
      *
      * @return $this
      */
-    public function warm(Client $oClient, OutputInterface $oOutput, int $iOffset = null, int $iLimit = null)
+    public function warm(Client $oClient, OutputInterface $oOutput, ?int $iOffset = null, ?int $iLimit = null)
     {
         /** @var Database $oDb */
         $oDb = Factory::service('Database');

@@ -30,7 +30,7 @@ trait Log
      *
      * @return $this
      */
-    protected function log(OutputInterface $oOutput = null, ...$aLines): self
+    protected function log(?OutputInterface $oOutput = null, ...$aLines): self
     {
         if ($oOutput !== null) {
             foreach ($aLines as $sLine) {
@@ -50,7 +50,7 @@ trait Log
      *
      * @return $this
      */
-    protected function logln(OutputInterface $oOutput = null, ...$aLines): self
+    protected function logln(?OutputInterface $oOutput = null, ...$aLines): self
     {
         if ($oOutput !== null) {
             foreach ($aLines as $sLine) {

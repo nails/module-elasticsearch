@@ -124,7 +124,7 @@ class Client
      *
      * @return $this
      */
-    public function destroy(OutputInterface $oOutput = null, array $aIndexes = null, array $aPipelines = null): self
+    public function destroy(?OutputInterface $oOutput = null, ?array $aIndexes = null, ?array $aPipelines = null): self
     {
         if (!$this->isAvailable()) {
             $this->logln($oOutput, 'Elasticsearch is not available');
@@ -217,7 +217,7 @@ class Client
      *
      * @return $this
      */
-    public function reset(OutputInterface $oOutput = null): self
+    public function reset(?OutputInterface $oOutput = null): self
     {
         if (!$this->isAvailable()) {
             $this->logln($oOutput, 'Elasticsearch is not available');
@@ -305,7 +305,7 @@ class Client
      *
      * @return $this
      */
-    public function warm(array $aIndexes = null, int $iOffset = null, int $iLimit = null, OutputInterface $oOutput = null): self
+    public function warm(?array $aIndexes = null, ?int $iOffset = null, ?int $iLimit = null, ?OutputInterface $oOutput = null): self
     {
         if (!$this->isAvailable()) {
             $this->logln($oOutput, 'Elasticsearch is not available');
