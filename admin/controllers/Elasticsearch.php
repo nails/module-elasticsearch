@@ -12,9 +12,10 @@
 
 namespace Nails\Admin\Elasticsearch;
 
-use Nails\Factory;
-use Nails\Admin\Helper;
 use Nails\Admin\Controller\Base;
+use Nails\Admin\Factory\Nav;
+use Nails\Admin\Helper;
+use Nails\Factory;
 
 class Elasticsearch extends Base
 {
@@ -27,18 +28,17 @@ class Elasticsearch extends Base
 
     /**
      * Announces this controller's navGroups
-     *
-     * @return stdClass
      */
-    public static function announce()
+    public static function announce(): Nav|array|null
     {
         if (userHasPermission('admin:elasticsearch:elasticsearch:view')) {
             $oNavGroup = Factory::factory('Nav', \Nails\Admin\Constants::MODULE_SLUG);
             $oNavGroup->setLabel('Elasticsearch');
             $oNavGroup->setIcon('fa-search');
             $oNavGroup->addAction('Statistics');
-            return $oNavGroup;
         }
+
+        return $oNavGroup ?? null;
     }
 
     // --------------------------------------------------------------------------
