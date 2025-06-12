@@ -12,8 +12,8 @@
 
 namespace Nails\Elasticsearch\Admin\Controller;
 
-use \Nails\Admin\Factory\Nav;
 use Nails\Admin\Controller\Base;
+use Nails\Admin\Factory\Nav;
 use Nails\Admin\Helper;
 use Nails\Elasticsearch\Admin\Permission;
 use Nails\Factory;
@@ -22,10 +22,8 @@ class Statistics extends Base
 {
     /**
      * Announces this controller's navGroups
-     *
-     * @return Nav|Nav[]
      */
-    public static function announce()
+    public static function announce(): Nav|array|null
     {
         if (userHasPermission(Permission\Statistics\View::class)) {
             /** @var Nav $oNavGroup */
