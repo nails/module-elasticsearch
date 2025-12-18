@@ -16,9 +16,12 @@ use Nails\Common\Exception\FactoryException;
 use Nails\Console\Command\Base;
 use Nails\Elasticsearch\Constants;
 use Nails\Elasticsearch\Exception\ClientException;
+use Nails\Elasticsearch\Interfaces\Index;
 use Nails\Elasticsearch\Service\Client;
 use Nails\Factory;
+use Symfony\Component\Console\Exception\InvalidOptionException;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -37,7 +40,10 @@ class Sync extends Base
     {
         $this
             ->setName('elasticsearch:sync')
-            ->setDescription('Non-destructively syncs mappings and settings to defined indexes');
+            ->setDescription('Non-destructively syncs mappings and settings to defined indexes')
+            ->addOption('index', 'i', InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED, 'Define specific index to sync')
+            ->addOption('mappings', 'm', InputOption::VALUE_NONE, 'Only sync mappings')
+            ->addOption('settings', 's', InputOption::VALUE_NONE, 'Only sync settings');
     }
 
     // --------------------------------------------------------------------------
@@ -60,9 +66,35 @@ class Sync extends Base
 
         // --------------------------------------------------------------------------
 
+        $aIndexes = $oInput->getOption('index') ?: null;
+        if (!empty($aIndexes)) {
+            $aIndexes = array_map(function (string $sClass) {
+                if (!class_exists($sClass) || !classImplements($sClass, Index::class)) {
+                    throw new InvalidOptionException(
+                        sprintf(
+                            '"%s" is not a valid Index',
+                            $sClass
+                        )
+                    );
+                }
+
+                return new $sClass();
+            }, $aIndexes);
+        }
+
+        $bMappings = $oInput->getOption('mappings');
+        $bSettings = $oInput->getOption('settings');
+
+        if (!$bMappings && !$bSettings) {
+            $bMappings = true;
+            $bSettings = true;
+        }
+
+        // --------------------------------------------------------------------------
+
         /** @var Client $oClient */
         $oClient = Factory::service('Client', Constants::MODULE_SLUG);
-        $oClient->sync($oOutput);
+        $oClient->sync($aIndexes, $oOutput, $bSettings, $bMappings);
 
         // --------------------------------------------------------------------------
 

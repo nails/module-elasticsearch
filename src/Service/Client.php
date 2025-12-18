@@ -298,11 +298,19 @@ class Client
     /**
      * Syncs all defined indexes in Elasticsearch
      *
-     * @param OutputInterface|null $oOutput An output interface to log to
+     * @param Index[]|null         $aIndexes  An array of indexes to sync
+     * @param OutputInterface|null $oOutput   An output interface to log to
+     * @param bool                 $bSettings Whether to sync settings
+     * @param bool                 $bMappings Whether to sync mappings
      *
      * @return $this
      */
-    public function sync(?OutputInterface $oOutput = null): self
+    public function sync(
+        ?array $aIndexes = null,
+        ?OutputInterface $oOutput = null,
+        bool $bSettings = true,
+        bool $bMappings = true
+    ): self
     {
         if (!$this->isAvailable()) {
             $this->logln($oOutput, 'Elasticsearch is not available');
@@ -311,8 +319,9 @@ class Client
             );
         }
 
-        $aIndexes   = $this->discoverIndexes();
-        $aPipelines = $this->discoverIngestPipelines();
+        $aIndexesArg = $aIndexes;
+        $aIndexes    = $aIndexes ?? $this->discoverIndexes();
+        $aPipelines  = $this->discoverIngestPipelines();
 
         if (empty($aIndexes) && empty($aPipelines)) {
             $this->logln($oOutput, 'Nothing to sync');
@@ -321,15 +330,14 @@ class Client
 
         foreach ($aIndexes as $oIndex) {
 
-            $bExists = $this
+            $oResponse = $this
                 ->getClient()
                 ->indices()
                 ->exists([
                     'index' => $oIndex->getIndex(),
-                ])
-                ->asBool();
+                ]);
 
-            if (!$bExists) {
+            if ($oResponse->getStatusCode() === HttpCodes::STATUS_NOT_FOUND) {
                 try {
 
                     $this->log($oOutput, sprintf(
@@ -359,68 +367,123 @@ class Client
                 }
 
             } else {
-
-                try {
-
-                    $this->log($oOutput, sprintf(
-                        'Updating settings for %s... ',
-                        $this->formatIndexAsString($oIndex)
-                    ));
-
-                    $aSettings = (array) $oIndex->getSettings();
-                    //  These settings cannot be updated on an open index
-                    unset($aSettings['number_of_shards']);
-                    unset($aSettings['analysis']);
-
-                    if (!empty($aSettings)) {
-                        $this
-                            ->getClient()
-                            ->indices()
-                            ->putSettings([
-                                'index' => $oIndex->getIndex(),
-                                'body'  => [
-                                    'settings' => $aSettings,
-                                ],
-                            ]);
-                    }
-
-                    $this->logln($oOutput, '<info>done</info>');
-
-                } catch (ClientResponseException $e) {
-                    $this->logEsError(
-                        $oOutput,
-                        'Failed to update settings',
-                        json_decode((string) $e->getResponse()->getBody())
-                    );
+                if ($bSettings) {
+                    $this->updateSettings($oIndex, $oOutput);
                 }
-
-                try {
-
-                    $this->log($oOutput, sprintf(
-                        'Updating mappings for %s... ',
-                        $this->formatIndexAsString($oIndex)
-                    ));
-
-                    $this
-                        ->getClient()
-                        ->indices()
-                        ->putMapping([
-                            'index' => $oIndex->getIndex(),
-                            'body'  => $oIndex->getMappings(),
-                        ]);
-
-                    $this->logln($oOutput, '<info>done</info>');
-
-                } catch (ClientResponseException $e) {
-                    $this->logEsError(
-                        $oOutput,
-                        'Failed to update mappings',
-                        json_decode((string) $e->getResponse()->getBody())
-                    );
+                if ($bMappings) {
+                    $this->updateMappings($oIndex, $oOutput);
                 }
             }
         }
 
+        if (empty($aIndexesArg)) {
+            $this->updatePipelines($oOutput);
+        }
+
+        return $this;
+    }
+
+    // --------------------------------------------------------------------------
+
+    /**
+     * Updates settings for an index
+     *
+     * @param Index                $oIndex  The index to update
+     * @param OutputInterface|null $oOutput An output interface to log to
+     *
+     * @return $this
+     */
+    public function updateSettings(Index $oIndex, ?OutputInterface $oOutput = null): self
+    {
+        try {
+
+            $this->log($oOutput, sprintf(
+                'Updating settings for %s... ',
+                $this->formatIndexAsString($oIndex)
+            ));
+
+            $aSettings = (array) $oIndex->getSettings();
+            //  These settings cannot be updated on an open index
+            unset($aSettings['number_of_shards']);
+            unset($aSettings['analysis']);
+
+            if (!empty($aSettings)) {
+                $this
+                    ->getClient()
+                    ->indices()
+                    ->putSettings([
+                        'index' => $oIndex->getIndex(),
+                        'body'  => [
+                            'settings' => $aSettings,
+                        ],
+                    ]);
+            }
+
+            $this->logln($oOutput, '<info>done</info>');
+
+        } catch (ClientResponseException $e) {
+            $this->logEsError(
+                $oOutput,
+                'Failed to update settings',
+                json_decode((string) $e->getResponse()->getBody())
+            );
+        }
+
+        return $this;
+    }
+
+    // --------------------------------------------------------------------------
+
+    /**
+     * Updates mappings for an index
+     *
+     * @param Index                $oIndex  The index to update
+     * @param OutputInterface|null $oOutput An output interface to log to
+     *
+     * @return $this
+     */
+    public function updateMappings(Index $oIndex, ?OutputInterface $oOutput = null): self
+    {
+        try {
+
+            $this->log($oOutput, sprintf(
+                'Updating mappings for %s... ',
+                $this->formatIndexAsString($oIndex)
+            ));
+
+            $this
+                ->getClient()
+                ->indices()
+                ->putMapping([
+                    'index' => $oIndex->getIndex(),
+                    'body'  => $oIndex->getMappings(),
+                ]);
+
+            $this->logln($oOutput, '<info>done</info>');
+
+        } catch (ClientResponseException $e) {
+            $this->logEsError(
+                $oOutput,
+                'Failed to update mappings',
+                json_decode((string) $e->getResponse()->getBody())
+            );
+        }
+
+        return $this;
+    }
+
+    // --------------------------------------------------------------------------
+
+    /**
+     * Updates all ingest pipelines
+     *
+     * @param OutputInterface|null $oOutput An output interface to log to
+     *
+     * @return $this
+     */
+    public function updatePipelines(?OutputInterface $oOutput = null): self
+    {
+        $aPipelines = $this->discoverIngestPipelines();
         foreach ($aPipelines as $oPipeline) {
             try {
 
