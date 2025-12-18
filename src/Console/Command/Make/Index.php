@@ -75,6 +75,7 @@ class Index extends Base
      * @param OutputInterface $oOutput The Output Interface provided by Symfony
      *
      * @return int
+     * @throws ConsoleException
      */
     protected function execute(InputInterface $oInput, OutputInterface $oOutput): int
     {
