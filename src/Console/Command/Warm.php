@@ -12,8 +12,10 @@
 
 namespace Nails\Elasticsearch\Console\Command;
 
+use Nails\Common\Exception\FactoryException;
 use Nails\Console\Command\Base;
 use Nails\Elasticsearch\Constants;
+use Nails\Elasticsearch\Exception\ClientException;
 use Nails\Elasticsearch\Interfaces\Index;
 use Nails\Elasticsearch\Service\Client;
 use Nails\Factory;
@@ -53,6 +55,8 @@ class Warm extends Base
      * @param OutputInterface $oOutput The Output Interface provided by Symfony
      *
      * @return int
+     * @throws FactoryException
+     * @throws ClientException
      */
     protected function execute(InputInterface $oInput, OutputInterface $oOutput): int
     {
