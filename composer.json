@@ -28,7 +28,7 @@
     "prefer-stable": true,
     "require":
     {
-        "php": ">=8",
+        "php": ">=8.1",
         "nails/common": "dev-feature/pre-new-admin",
         "nails/module-api": "dev-feature/pre-new-admin",
         "nails/module-console": "dev-feature/pre-new-admin",
