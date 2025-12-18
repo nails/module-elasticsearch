@@ -274,7 +274,162 @@ class Client
                     $this->formatIngestPipelineAsString($oPipeline)
                 ));
 
-                $response = $this
+                $this
+                    ->getClient()
+                    ->ingest()
+                    ->putPipeline([
+                        'id'   => $oPipeline::getId(),
+                        'body' => [
+                            'description' => $oPipeline::getDescription(),
+                            'processors'  => $oPipeline::getProcessors(),
+                        ],
+                    ]);
+
+            } finally {
+                $this->logln($oOutput, '<info>done</info>');
+            }
+        }
+
+        return $this;
+    }
+
+    // --------------------------------------------------------------------------
+
+    /**
+     * Syncs all defined indexes in Elasticsearch
+     *
+     * @param OutputInterface|null $oOutput An output interface to log to
+     *
+     * @return $this
+     */
+    public function sync(?OutputInterface $oOutput = null): self
+    {
+        if (!$this->isAvailable()) {
+            $this->logln($oOutput, 'Elasticsearch is not available');
+            throw new ClientException(
+                'Elasticsearch is not available'
+            );
+        }
+
+        $aIndexes   = $this->discoverIndexes();
+        $aPipelines = $this->discoverIngestPipelines();
+
+        if (empty($aIndexes) && empty($aPipelines)) {
+            $this->logln($oOutput, 'Nothing to sync');
+            return $this;
+        }
+
+        foreach ($aIndexes as $oIndex) {
+
+            $bExists = $this
+                ->getClient()
+                ->indices()
+                ->exists([
+                    'index' => $oIndex->getIndex(),
+                ])
+                ->asBool();
+
+            if (!$bExists) {
+                try {
+
+                    $this->log($oOutput, sprintf(
+                        'Index %s does not exist, creating... ',
+                        $this->formatIndexAsString($oIndex)
+                    ));
+
+                    $this
+                        ->getClient()
+                        ->indices()
+                        ->create([
+                            'index' => $oIndex->getIndex(),
+                            'body'  => [
+                                'settings' => $oIndex->getSettings(),
+                                'mappings' => $oIndex->getMappings(),
+                            ],
+                        ]);
+
+                    $this->logln($oOutput, '<info>done</info>');
+
+                } catch (ElasticsearchException $e) {
+                    $this->logEsError(
+                        $oOutput,
+                        'Failed to create index',
+                        json_decode($e->getMessage())
+                    );
+                }
+
+            } else {
+
+                try {
+
+                    $this->log($oOutput, sprintf(
+                        'Updating settings for %s... ',
+                        $this->formatIndexAsString($oIndex)
+                    ));
+
+                    $aSettings = (array) $oIndex->getSettings();
+                    //  These settings cannot be updated on an open index
+                    unset($aSettings['number_of_shards']);
+                    unset($aSettings['analysis']);
+
+                    if (!empty($aSettings)) {
+                        $this
+                            ->getClient()
+                            ->indices()
+                            ->putSettings([
+                                'index' => $oIndex->getIndex(),
+                                'body'  => [
+                                    'settings' => $aSettings,
+                                ],
+                            ]);
+                    }
+
+                    $this->logln($oOutput, '<info>done</info>');
+
+                } catch (ClientResponseException $e) {
+                    $this->logEsError(
+                        $oOutput,
+                        'Failed to update settings',
+                        json_decode((string) $e->getResponse()->getBody())
+                    );
+                }
+
+                try {
+
+                    $this->log($oOutput, sprintf(
+                        'Updating mappings for %s... ',
+                        $this->formatIndexAsString($oIndex)
+                    ));
+
+                    $this
+                        ->getClient()
+                        ->indices()
+                        ->putMapping([
+                            'index' => $oIndex->getIndex(),
+                            'body'  => $oIndex->getMappings(),
+                        ]);
+
+                    $this->logln($oOutput, '<info>done</info>');
+
+                } catch (ClientResponseException $e) {
+                    $this->logEsError(
+                        $oOutput,
+                        'Failed to update mappings',
+                        json_decode((string) $e->getResponse()->getBody())
+                    );
+                }
+            }
+        }
+
+        foreach ($aPipelines as $oPipeline) {
+            try {
+
+                $this->log($oOutput, sprintf(
+                    'Updating ingest pipeline %s... ',
+                    $this->formatIngestPipelineAsString($oPipeline)
+                ));
+
+                $this
                     ->getClient()
                     ->ingest()
                     ->putPipeline([
