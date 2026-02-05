@@ -32,7 +32,7 @@
         "nails/common": "dev-feature/pre-new-admin",
         "nails/module-api": "dev-feature/pre-new-admin",
         "nails/module-console": "dev-feature/pre-new-admin",
-        "elasticsearch/elasticsearch": "~8.0"
+        "elasticsearch/elasticsearch": "^8.0 || ^9.0"
     },
     "require-dev":
     {
