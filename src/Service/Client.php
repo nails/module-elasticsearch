@@ -12,14 +12,14 @@
 
 namespace Nails\Elasticsearch\Service;
 
-use Elastic\Elasticsearch\Exception\ElasticsearchException;
 use Elastic\Elasticsearch\Exception\ClientResponseException;
+use Elastic\Elasticsearch\Exception\ElasticsearchException;
 use Elastic\Transport\Exception\NoNodeAvailableException;
+use Nails\Common\Exception\FactoryException;
 use Nails\Common\Service\HttpCodes;
 use Nails\Components;
-use Nails\Elasticsearch\Constants;
-use Nails\Common\Exception\FactoryException;
 use Nails\Config;
+use Nails\Elasticsearch\Constants;
 use Nails\Elasticsearch\Exception\ClientException;
 use Nails\Elasticsearch\Factory\Search;
 use Nails\Elasticsearch\Interfaces\Index;
@@ -348,8 +348,7 @@ class Client
         ?OutputInterface $oOutput = null,
         bool $bSettings = true,
         bool $bMappings = true
-    ): self
-    {
+    ): self {
         if (!$this->isAvailable()) {
             $this->logln($oOutput, 'Elasticsearch is not available');
             throw new ClientException(
