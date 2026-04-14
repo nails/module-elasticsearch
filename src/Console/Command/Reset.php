@@ -39,7 +39,9 @@ class Reset extends Base
     {
         $this
             ->setName('elasticsearch:reset')
-            ->setDescription('Erases defined indexes in Elasticsearch [DESTRUCTIVE]');
+            ->setDescription('Erases indexes in Elasticsearch [DESTRUCTIVE]')
+            ->addOption('index', 'i', InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED, 'Define specific index(es) to erase')
+            ->addOption('pipeline', 'p', InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED, 'Define specific pipeline(s) to erase');
     }
 
     // --------------------------------------------------------------------------
@@ -76,9 +78,14 @@ class Reset extends Base
 
         // --------------------------------------------------------------------------
 
+        $aIndexes   = $oInput->getOption('index') ?: [];
+        $aPipelines = $oInput->getOption('pipeline') ?: [];
+
+        // --------------------------------------------------------------------------
+
         /** @var Client $oClient */
         $oClient = Factory::service('Client', Constants::MODULE_SLUG);
-        $oClient->reset($oOutput);
+        $oClient->reset($aIndexes, $aPipelines, $oOutput);
 
         // --------------------------------------------------------------------------
 
