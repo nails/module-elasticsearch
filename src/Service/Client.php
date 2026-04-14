@@ -217,7 +217,7 @@ class Client
      *
      * @return $this
      */
-    public function reset(?OutputInterface $oOutput = null): self
+    public function reset(array $aIndexes = [], array $aPipelines = [], ?OutputInterface $oOutput = null): self
     {
         if (!$this->isAvailable()) {
             $this->logln($oOutput, 'Elasticsearch is not available');
@@ -226,8 +226,46 @@ class Client
             );
         }
 
-        $aIndexes   = $this->discoverIndexes();
-        $aPipelines = $this->discoverIngestPipelines();
+        //  Only discover indexes and pipelines if both arguments are empty. If the caller passes
+        //  even one index|pipeline, then that's all that should be reset.
+        if (empty($aIndexes) && empty($aPipelines)) {
+            $aIndexes   = $this->discoverIndexes();
+            $aPipelines = $this->discoverIngestPipelines();
+        }
+
+        $aIndexes = array_map(function ($mIndex) {
+            if (is_object($mIndex) && $mIndex instanceof Index) {
+                return $mIndex;
+            }
+
+            if (is_string($mIndex) && class_exists($mIndex) && classImplements($mIndex, Index::class)) {
+                return new $mIndex();
+            }
+
+            throw new ClientException(
+                sprintf(
+                    '"%s" is not a valid Index',
+                    $mIndex
+                )
+            );
+        }, $aIndexes);
+
+        $aPipelines = array_map(function ($mPipeline) {
+            if (is_object($mPipeline) && $mPipeline instanceof Pipeline) {
+                return $mPipeline;
+            }
+
+            if (is_string($mPipeline) && class_exists($mPipeline) && classImplements($mPipeline, Pipeline::class)) {
+                return new $mPipeline();
+            }
+
+            throw new ClientException(
+                sprintf(
+                    '"%s" is not a valid Pipeline',
+                    $mPipeline
+                )
+            );
+        }, $aPipelines);
 
         if (empty($aIndexes) && empty($aPipelines)) {
             $this->logln($oOutput, 'Nothing to reset');
