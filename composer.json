@@ -24,7 +24,7 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
-        "php": ">=8.1",
+        "php": ">=8.3",
         "nails/common": "dev-develop",
         "nails/module-api": "dev-develop",
         "nails/module-console": "dev-develop",
