@@ -49,7 +49,7 @@ trait SyncWithElasticsearch
     /**
      * Enforce the `getById` method
      */
-    abstract public function getById($iId, array $aData = []);
+    abstract public function getById(int $iId, array $aData = []);
 
     // --------------------------------------------------------------------------
 
