@@ -733,11 +733,11 @@ class Client
      *
      * @param OutputInterface $oOutput   The output interface to log to
      * @param string          $sError    The generic error, i.e what went wrong
-     * @param object          $oResponse The actual response from ES
+     * @param null|object     $oResponse The actual response from ES
      *
      * @return $this
      */
-    protected function logEsError(?OutputInterface $oOutput, string $sError, object $oResponse): self
+    protected function logEsError(?OutputInterface $oOutput, string $sError, ?object $oResponse): self
     {
         if ($oOutput !== null) {
             $this->logln(
