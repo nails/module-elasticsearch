@@ -31,7 +31,7 @@
         "elasticsearch/elasticsearch": "^8.0 || ^9.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "^12.0",
+        "phpunit/phpunit": "^13.4",
         "phpstan/phpstan": "^2.0",
         "nails/module-admin": "dev-develop"
     },
